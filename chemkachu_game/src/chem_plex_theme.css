@@ -1,0 +1,1173 @@
+/* ============================================================================
+ * FILENAME: src/chem_plex_theme.css
+ * PROJECT: Chemical Reaction Game (Windows Longhorn Plex Theme)
+ * STATUS: CLEAN & COMPLETE (ĐÃ XÓA ĐOẠN LẶP, FIX VIỀN XANH & THÊM VIỀN CAM HINT)
+ * ============================================================================ */
+
+/* ============================================================================
+ * KHỐI 1: NẠP FONT ROBOTO CỤC BỘ (LOCAL FONT)
+ * Hành vi tổng quát: Nạp file font trực tiếp từ thư mục src/fonts/ để game chạy
+ * mượt ngay cả khi mất mạng (offline) lúc lên trường chấm đồ án.
+ * Lệnh lạ cần biết:
+ * - @font-face: Khai báo tên font tùy chỉnh cho trình duyệt.
+ * - font-weight: 100 900 -> Dải độ đậm của Variable Font (1 file chứa mọi độ dày).
+ * ============================================================================ */
+@font-face {
+  font-family: 'Roboto';
+  src: url('fonts/Roboto-VariableFont_wdth,wght.ttf') format('truetype-variations'),
+       url('fonts/Roboto-VariableFont_wdth,wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('fonts/Roboto-Italic-VariableFont_wdth,wght.ttf') format('truetype-variations'),
+       url('fonts/Roboto-Italic-VariableFont_wdth,wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* ============================================================================
+ * KHỐI 2: RESET KHUNG TRANG & CHỐNG BÔI ĐEN VĂN BẢN
+ * Hành vi tổng quát: Khóa kích thước toàn màn hình 100vw x 100vh, ẩn thanh cuộn
+ * và ngăn người chơi vô tình quét xanh bôi đen chữ khi click chuột liên tục.
+ * ============================================================================ */
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: #0f2847;
+  font-family: 'Bahnschrift', 'Segoe UI', Tahoma, sans-serif !important;
+  box-sizing: border-box;
+
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Lệnh lạ: *, *:before, *:after { box-sizing: inherit; }
+ * Ép mọi thẻ HTML (kể cả phần tử giả) tính kích thước width/height bao gồm cả
+ * padding và border, tránh tình trạng thêm viền làm phình to ô gây vỡ layout. */
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+/* ============================================================================
+ * KHỐI 3: BỐ CỤC KHÔNG GIAN CHÍNH (VIEWPORT, NAVBAR SLOT & GAME SPACE)
+ * Hành vi tổng quát: Chia màn hình làm 2 vùng độc lập: cột Navbar bên trái
+ * (19.05vw) và khu vực chơi game bên phải chứa ảnh nền sóng xanh Plex.
+ * ============================================================================ */
+.chem-viewport {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background-color: #0f2847;
+  display: flex;
+}
+
+.chem-navbar-slot {
+  position: relative;
+  width: 19.05vw;
+  height: 100vh;
+  flex-shrink: 0;
+  z-index: 100;
+  background-color: #16365c;
+  border-right: 2px dashed rgba(255, 255, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8daecf;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  padding: 10px;
+  transition: width 0.28s ease;
+}
+
+.chem-game-space {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 100vh;
+  z-index: 1;
+  background-color: #0f2847;
+  background-image: url('background-image/chem-right-side-background.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  pointer-events: auto;
+}
+
+/* ============================================================================
+ * KHỐI 4: THANH HEADER THỐNG NHẤT PHÍA TRÊN (LONGHORN PLEX BAR)
+ * Hành vi tổng quát: Tạo dải điều khiển nổi phía trên gồm: Nút Thoát -> 4 ô
+ * thông tin (Mức độ, Tên người chơi, Điểm, Thời gian) -> Nút Trợ giúp.
+ * ============================================================================ */
+.chem-unified-header {
+  position: absolute;
+  top: 12px;
+  left: 10px;
+  right: 10px;
+  height: 104px;
+  z-index: 50;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 20px;
+
+  background-color: #062452;
+  background-image: radial-gradient(circle at 50% 50%, #0a3980 0%, #062452 100%);
+  border: 1.5px solid rgba(72, 145, 235, 0.55);
+  border-radius: 18px;
+  box-shadow:
+    0 10px 28px rgba(0, 0, 0, 0.75),
+    inset 0 1px 1px rgba(145, 200, 255, 0.45),
+    inset 0 -2px 6px rgba(2, 12, 30, 0.8);
+}
+
+.plex-divider {
+  width: 1.5px;
+  height: 72px;
+  background: linear-gradient(180deg, rgba(96, 165, 250, 0.05) 0%, rgba(96, 165, 250, 0.45) 50%, rgba(96, 165, 250, 0.05) 100%);
+  flex-shrink: 0;
+}
+
+/* ============================================================================
+ * KHỐI 5: NÚT TRÒN PNG (EXIT & HINT ORBS) + MANGA SPEECH BUBBLE
+ * Hành vi tổng quát: Thay đổi ảnh PNG theo trạng thái chuột (Normal/Hover/
+ * Pressed/Disabled). Khi hết lượt trợ giúp (class .is-out-of-hints), rê chuột
+ * vào vùng nút sẽ hiện khung thoại Manga nền trắng bạc Plex có sọc 4px.
+ * ============================================================================ */
+.plex-orb-btn {
+  width: 72px;
+  height: 72px;
+  border: none;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: transform 0.12s ease;
+}
+
+/* Lệnh lạ: :hover:not(:disabled) -> Chỉ phóng to nút khi chuột lướt qua VÀ nút
+ * chưa bị vô hiệu hóa (disabled). */
+.plex-orb-btn:hover:not(:disabled) { transform: scale(1.05); }
+.plex-orb-btn:active:not(:disabled) { transform: scale(0.96); }
+
+.plex-orb-btn.exit-orb { background-image: url('ui_cpnt_buttons/exitsgame/exit_icon_normal.png'); }
+.plex-orb-btn.exit-orb:hover { background-image: url('ui_cpnt_buttons/exitsgame/exit_icon_hover.png'); }
+.plex-orb-btn.exit-orb:active { background-image: url('ui_cpnt_buttons/exitsgame/exit_icon_pressed.png'); }
+
+.plex-orb-btn.hint-orb { background-image: url('ui_cpnt_buttons/hintsgame/hints_btn_normal.png'); }
+.plex-orb-btn.hint-orb:hover:not(:disabled) { background-image: url('ui_cpnt_buttons/hintsgame/hints_btn_hover.png'); }
+.plex-orb-btn.hint-orb:active:not(:disabled) { background-image: url('ui_cpnt_buttons/hintsgame/hints_btn_pressed.png'); }
+
+.plex-orb-btn.hint-orb:disabled {
+  background-image: url('ui_cpnt_buttons/hintsgame/hints_btn_disabled.png');
+  cursor: default;
+}
+
+.plex-hint-wrapper {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.plex-hint-badge {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #f87171 0%, #dc2626 100%);
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  font-family: 'Roboto', sans-serif !important;
+  font-size: 14px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.65);
+  pointer-events: none; /* Cho phép click xuyên qua badge xuống nút bên dưới */
+}
+
+/* Hộp thoại Manga khi hết lượt trợ giúp */
+.plex-manga-bubble {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 2px;
+  min-width: 125px;
+  min-height: 35px;
+  width: max-content; /* Tự giãn chiều ngang ôm vừa khít độ dài dòng chữ */
+  padding: 7px 14px;
+
+  border-radius: 1px;
+  border: 1.5px solid #0a1f44;
+
+  /* Lệnh lạ: repeating-linear-gradient -> Lặp lại dải sọc ngang chu kỳ 4px
+   * (3px trắng bạc #eef3f8 + 1px sọc #e3ebf3 tối hơn 3%) tạo chất liệu hoài cổ. */
+  background-color: #eef3f8;
+  background-image: repeating-linear-gradient(
+    180deg,
+    #eef3f8 0px,
+    #eef3f8 3px,
+    #e3ebf3 3px,
+    #e3ebf3 4px
+  );
+
+  font-family: 'Roboto', sans-serif !important;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #091e42;
+  white-space: nowrap;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow:
+    0 6px 16px rgba(2, 10, 26, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(4px);
+  transition: opacity 0.15s ease, visibility 0.15s ease, transform 0.15s ease;
+  z-index: 90;
+}
+
+/* Mũi nhọn tam giác của khung thoại Manga tạo bằng kỹ thuật CSS Border Trick */
+.plex-manga-bubble::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  right: 25px;
+  border-width: 0 8px 10px 8px;
+  border-style: solid;
+  border-color: transparent transparent #0a1f44 transparent;
+}
+
+.plex-manga-bubble::after {
+  content: "";
+  position: absolute;
+  top: -7px;
+  right: 26.5px;
+  border-width: 0 6.5px 8px 6.5px;
+  border-style: solid;
+  border-color: transparent transparent #eef3f8 transparent;
+}
+
+.plex-hint-wrapper.is-out-of-hints:hover .plex-manga-bubble {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* ============================================================================
+ * KHỐI 6: CỤM 4 Ô CHỈ SỐ Ở GIỮA HEADER (MỨC ĐỘ, TÊN, ĐIỂM, THỜI GIAN)
+ * Hành vi tổng quát: Chia tỉ lệ chiều ngang linh hoạt bằng Flexbox để thu gọn
+ * ô Mức độ và nhường không gian tối đa cho ô Tên Người Chơi 4 chữ.
+ * ============================================================================ */
+.plex-stats-row {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  height: 100%;
+}
+
+.plex-stat-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-start;
+  height: 80px;
+}
+
+.plex-stat-col.col-difficulty { flex: 0 0 calc(22% - 95px); min-width: 125px; }
+.plex-stat-col.col-player     { flex: 1 1 auto; }
+.plex-stat-col.col-score      { flex: 0 0 21%; }
+.plex-stat-col.col-timer      { flex: 0 0 21%; }
+/**
+ * GIẢI THÍCH:
+ * @layout Flexbox 4 cột: Cố định 2 cột cuối (42%), cột 1 tính toán động, cột 2 tự lấp đầy khoảng trống.
+ * @syntax flex: [grow: 1=giãn, 0=không] [shrink: 1=co, 0=không] [basis: kích thước gốc]
+ * @col-difficulty Khóa cứng (0 0) ở mức [22% - 95px], nhưng không bao giờ nhỏ hơn 125px (min-width).
+ * @col-player Linh hoạt (1 1 auto), tự động co giãn để chiếm trọn phần diện tích còn dư ở giữa (~36% + 95px).
+ * @col-score & @col-timer Khóa cứng (0 0) chiều rộng cố định ở mức 21% mỗi cột.
+ */
+
+.plex-stat-label {
+  width: 100%;
+  height: 28px;
+  line-height: 28px;
+  font-family: 'Roboto', sans-serif !important;
+  font-size: 24px;
+  font-weight: 700;
+  color: #facc15;
+  text-align: left;
+  text-transform: uppercase;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.85);
+  white-space: nowrap;
+}
+
+.plex-stat-box {
+  position: relative;
+  width: 100%;
+  height: 44px;
+  background: rgba(18, 46, 92, 0.72);
+  border: 1.5px solid rgba(56, 114, 194, 0.55);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: inset 0 3px 7px rgba(2, 10, 26, 0.85), 0 1px 1px rgba(140, 195, 255, 0.25);
+}
+
+.plex-stat-box.box-difficulty.easy {
+  border: 3px solid #65c947;
+  box-shadow: inset 0 3px 7px rgba(2, 10, 26, 0.8), 0 0 10px rgba(101, 201, 71, 0.45);
+}
+
+.plex-stat-value {
+  position: relative;
+  z-index: 2;
+  font-family: 'Roboto', sans-serif !important;
+  font-size: 22px;
+  font-weight: 700;
+  color: #facc15;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.85);
+  white-space: nowrap;
+}
+/* ========================================================================================
+ * EXTRA EFFECT for KHỐI 6: THANH THỜI GIAN TÍCH PHÂN (TỤT TỪNG NẤC MỖI GIÂY)
+ * ======================================================================================== */
+.plex-stat-box.box-timer {
+  --timer-pct: 100%;
+}
+
+.plex-stat-box.box-timer .timer-text-base {
+  font-weight: 900;
+  color: #facc15;
+}
+
+.timer-fill-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, #fde047 0%, #facc15 55%, #eab308 100%);
+  clip-path: inset(0 calc(100% - var(--timer-pct)) 0 0);
+  transition: none;
+  pointer-events: none;
+}
+
+.timer-fill-layer .timer-text-fill {
+  font-weight: 900;
+  color: #062452;
+  text-shadow: none;
+}
+
+/* ============================================================================
+ * KHỐI 7: BÀN CHƠI PIKACHU HÓA HỌC & CÁC Ô CHẤT (TỈ LỆ 3:2 - 120x80px)
+ * Hành vi tổng quát: Căn bảng vào chính giữa màn hình bằng translate(-50%, -50%)
+ * và định nghĩa 5 trạng thái của mỗi ô chất: Bình thường, Đang chọn (Vàng),
+ * Gợi ý (Cam), Ghép đúng (Xanh lá), và Ghép sai (Rung viền đỏ).
+ * ============================================================================ */
+.chem-board-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+.chem-board-grid {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+  background: rgba(10, 25, 47, 0.65);
+  border: 1px solid rgba(82, 140, 210, 0.4);
+  border-radius: 16px;
+  box-shadow: 
+    0 16px 40px rgba(0, 0, 0, 0.8),
+    inset 0 1px 2px rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.chem-tile {
+  width: 120px;
+  height: 80px;
+  border-radius: 10px;
+  border: 2px solid #38bdf8;
+  cursor: pointer;
+  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+
+  background: linear-gradient(180deg, #16b0fe 0%, #0c56b8 50%, #07057f 100%);
+  
+  box-shadow: 
+    0 6px 14px rgba(0, 0, 0, 0.6),
+    inset 0 2px 2px rgba(255, 255, 255, 0.4),
+    inset 0 -3px 6px rgba(0, 0, 0, 0.5);
+
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  user-select: none;
+}
+
+.chem-tile:hover {
+  transform: translateY(-4px) scale(1.03);
+  filter: brightness(1.2);
+  border-color: #7dd3fc;
+  box-shadow: 
+    0 10px 22px rgba(22, 176, 254, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.6);
+}
+
+/* Trạng thái 1: Ô đang được người chơi bấm chọn (Viền Vàng) */
+.chem-tile.selected {
+  border-color: #facc15 !important;
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 
+    0 0 0 4px rgba(250, 204, 21, 0.65),
+    0 8px 20px rgba(0, 0, 0, 0.8),
+    inset 0 2px 4px rgba(255, 255, 255, 0.8) !important;
+  filter: brightness(1.25);
+}
+
+/* Trạng thái 2 (MỚI): Ô được nút Trợ giúp (Hints) chỉ điểm -> Viền CAM nhấp nháy */
+@keyframes orangeHintPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.75), 0 0 18px rgba(249, 115, 22, 0.9);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(251, 146, 60, 0.95), 0 0 28px rgba(249, 115, 22, 1);
+  }
+}
+
+.chem-tile.hint-highlight-orange {
+  border-color: #fb923c !important;
+  animation: orangeHintPulse 1.1s infinite ease-in-out;
+  filter: brightness(1.18);
+}
+
+/* Trạng thái 3 (ĐÃ SỬA LỖI CÚ PHÁP): 2 ô hợp nhau -> Highlight viền XANH LÁ sáng rực */
+.chem-tile.matched-success-green {
+  border-color: #4ade80 !important;
+  box-shadow:
+    0 0 0 4px rgba(74, 222, 128, 0.75),
+    0 0 24px rgba(74, 222, 128, 0.95),
+    inset 0 0 14px rgba(74, 222, 128, 0.75) !important;
+  transform: scale(1.04);
+  filter: brightness(1.28);
+}
+
+/* Trạng thái 4: 2 ô không hợp nhau -> Rung giật (Buzzing) viền ĐỎ */
+@keyframes tileBuzzing {
+  0%, 100% { transform: translate(0, 0); }
+  20%  { transform: translate(-5px, 3px); }
+  40%  { transform: translate(5px, -3px); }
+  60%  { transform: translate(-4px, -2px); }
+  80%  { transform: translate(4px, 2px); }
+}
+
+.chem-tile.error-buzzing {
+  animation: tileBuzzing 0.35s ease-in-out forwards;
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.95), inset 0 0 10px rgba(239, 68, 68, 0.6) !important;
+}
+
+/* Trạng thái 5: Ô đã ăn xong -> Ẩn đi nhưng giữ nguyên diện tích chỗ đứng trong lưới */
+.chem-tile.matched-hidden {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.chem-tile-symbol {
+  font-family: 'Bahnschrift', sans-serif !important;
+  font-size: 19px;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9), 0 0 10px rgba(22, 176, 254, 0.5);
+  text-align: center;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+/* ============================================================================
+ * KHỐI 8: LỚP ĐƯỜNG DÂY NEON SVG & HIỆU ỨNG 8 MẢNH VỠ RƠI XUỐNG SÀN
+ * Hành vi tổng quát: Vẽ đường gấp khúc nối trung điểm cạnh ô và tạo hiệu ứng
+ * hạt vật lý văng lên rồi rơi tự do khi ăn đúng cặp chất.
+ * ============================================================================ */
+.chem-svg-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.chem-neon-path-green {
+  fill: none;
+  stroke: #4ade80;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 8px #4ade80) drop-shadow(0 0 16px #16a34a);
+  transition: stroke-dashoffset 0.3s linear;
+}
+
+.chem-neon-path-red {
+  fill: none;
+  stroke: #ef4444;
+  stroke-width: 5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 8px #ef4444) drop-shadow(0 0 16px #dc2626);
+  transition: stroke-dashoffset 0.3s linear;
+}
+
+.chem-shatter-particle-15 {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  border-radius: 3px;
+  background: radial-gradient(circle, #86efac 0%, #22c55e 100%);
+  box-shadow: 0 0 10px #4ade80;
+  pointer-events: none;
+  z-index: 35;
+  animation: shatterDrop 0.75s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Lệnh lạ: var(--dx), calc(...) -> Biến CSS động do JavaScript truyền vào từng hạt
+ * giúp 8 mảnh vỡ bay theo 8 quỹ đạo ngẫu nhiên khác nhau. */
+@keyframes shatterDrop {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  30% {
+    transform: translate(calc(var(--dx) * 0.4), calc(var(--dy-up))) rotate(var(--rot-mid)) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy-floor)) rotate(var(--rot-end)) scale(0.2);
+  }
+}
+
+/* KHỐI 9: MENU ĐĂNG NHẬP VÀ GIAO DIỆN MÀN HÌNH CHƠI.
+ * Mục đích: nhập tên, chọn độ khó trước khi bắt đầu game.
+ * Vận hành: CSS bố trí và ẩn/hiện giao diện theo class trạng thái.
+ * Sử dụng: JavaScript thêm menu-hidden, gỡ is-menu-state để chuyển vào màn chơi.
+ * Lưu ý: backdrop-filter tạo hiệu ứng kính mờ. */
+
+/* ============================================================================
+ * MENU ĐĂNG NHẬP SLIDE 1 (CĂN GIỮA VÙNG CHƠI & ẨN COMPONENT GAME)
+ * ============================================================================ */
+
+.chem-game-space.is-menu-state .chem-unified-header,
+.chem-game-space.is-menu-state .chem-svg-layer,
+.chem-game-space.is-menu-state .chem-board-wrapper {
+  display: none !important;
+}
+
+/* Căn chính giữa tuyệt đối vùng game bên phải (đã trừ Navbar) */
+.plex-menu-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: transparent;
+  transition: opacity 0.28s ease, visibility 0.28s ease;
+}
+
+.plex-menu-overlay.menu-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* Khung chính: Phóng to +10%, tự co giãn theo chiều rộng còn lại của #gameSpace */
+.plex-menu-card {
+  position: relative;
+  width: min(836px, 94%);
+  padding: clamp(22px, 3vh, 30px) clamp(24px, 4.5vw, 58px) clamp(28px, 3.8vh, 40px);
+  border-radius: 28px;
+  border: 1.5px solid rgba(145, 195, 255, 0.45);
+  background: linear-gradient(
+    180deg,
+    rgba(40, 90, 152, 0.60) 0%,
+    rgba(0, 32, 96, 0.60) 100%
+  );
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow:
+    0 24px 36px -6px rgba(0, 6, 24, 0.90),
+    0 10px 18px rgba(0, 0, 0, 0.55),
+    inset 0 1px 1px rgba(255, 255, 255, 0.35);
+  font-family: 'Aptos', 'Bahnschrift', 'Segoe UI', sans-serif;
+}
+
+.plex-version-tag {
+  position: absolute;
+  top: 18px;
+  right: 28px;
+  color: #f5b027;
+  font-size: clamp(13px, 1.05vw, 15px);
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.75);
+}
+
+.plex-menu-brand {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 4px 0 26px;
+}
+
+.plex-title-banner {
+  width: min(374px, 78%);
+  height: auto;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+  filter: drop-shadow(0 6px 14px rgba(0, 165, 255, 0.38));
+}
+
+.plex-menu-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.plex-form-row {
+  display: grid;
+  grid-template-columns: clamp(155px, 17vw, 226px) 1fr;
+  align-items: center;
+  gap: clamp(12px, 1.5vw, 20px);
+}
+
+.plex-menu-label {
+  color: #f5a614;
+  font-size: clamp(18px, 1.75vw, 24.5px);
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+/* Ô nhập Họ và Tên (+10%) */
+.plex-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.plex-name-input {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px;
+  border-radius: 6px;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: clamp(17px, 1.45vw, 21px);
+  font-weight: 600;
+  outline: none;
+  background: radial-gradient(circle at 50% 50%, #00246b 0%, #002060 100%);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.65), 0 4px 10px rgba(0, 0, 0, 0.35);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.plex-name-input:focus {
+  border-color: #38bdf8;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.65), 0 0 10px rgba(56, 189, 248, 0.8);
+}
+
+/* Conversation Bubble báo lỗi */
+.plex-error-bubble {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 12px;
+  z-index: 20;
+  padding: 8px 15px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #991b1b 0%, #450a0a 100%);
+  border: 1.5px solid #fca5a5;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.78);
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.plex-error-bubble::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 22px;
+  border-width: 6px;
+  border-style: solid;
+  border-color: #fca5a5 transparent transparent transparent;
+}
+
+.plex-error-bubble.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@keyframes inputShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  50% { transform: translateX(6px); }
+  75% { transform: translateX(-4px); }
+}
+
+.input-shake {
+  animation: inputShake 0.32s ease;
+}
+
+/* Nhóm 3 nút mức độ: Nút bỏ chọn thấp/nhỏ viền trắng <-> Nút chọn phồng +2px viền xanh sáng & Glow trượt */
+.menu-diff-group {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  height: 48px;
+}
+
+/* 1 lớp đèn nền (Backlight Glow) duy nhất nằm ĐẰNG SAU nút (z-index: 1) */
+.diff-slider-frame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  border-radius: 6px;
+  background: transparent;
+  box-shadow:
+    0 0 14px 4px rgba(56, 189, 248, 0.9),
+    0 0 28px 8px rgba(14, 165, 233, 0.55);
+  pointer-events: none;
+  transition:
+    transform 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+    width 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.26s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Nút nằm ĐÈ LÊN TRÊN đèn nền (z-index: 3) — Trạng thái thường thu nhỏ, viền trắng */
+.menu-diff-btn {
+  position: relative;
+  z-index: 3;
+  place-self: center;
+  width: calc(100% - 8px);
+  height: 40px;
+  border-radius: 6px;
+  border: 2px solid #ffffff;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: clamp(13px, 1.15vw, 17px);
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.72);
+  transition:
+    width 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+    height 0.26s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.26s ease;
+}
+
+/* Nút được chọn: phồng +2px mỗi cạnh, đổi viền sang xanh sáng (KHÔNG tự phát glow đè lên) */
+.menu-diff-btn.is-selected {
+  width: calc(100% - 4px);
+  height: 44px;
+  border-color: #38bdf8;
+  box-shadow: none;
+}
+
+.menu-diff-btn.easy {
+  background: radial-gradient(circle at 50% 50%, #56b339 0%, #4da332 100%);
+}
+
+.menu-diff-btn.medium {
+  background: radial-gradient(circle at 50% 50%, #e6b009 0%, #d9a406 100%);
+}
+
+.menu-diff-btn.hard {
+  background: radial-gradient(circle at 50% 50%, #e60000 0%, #d90000 100%);
+}
+
+/* Nút CHƠI (+10%) */
+.plex-menu-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.plex-start-btn {
+  width: min(430px, 100%);
+  height: 51px;
+  border-radius: 6px;
+  border: 2px solid #ffffff;
+  color: #f5a614;
+  font-family: inherit;
+  font-size: clamp(20px, 1.75vw, 24.5px);
+  font-weight: 800;
+  letter-spacing: 1px;
+  cursor: pointer;
+  background: radial-gradient(circle at 50% 50%, #00246b 0%, #002060 100%);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.55);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+}
+
+.plex-start-btn:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.7), 0 8px 20px rgba(0, 0, 0, 0.65);
+}
+
+.plex-start-btn:active {
+  transform: scale(0.98);
+}
+
+/* ============================================================================
+ * KHỐI 10: CONVERSATION BOX XÁC NHẬN THOÁT GAME (ĐỒNG BỘ ĐỒ HỌA MANGA HINTS)
+ * ============================================================================ */
+.plex-exit-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.plex-exit-bubble {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  z-index: 350;
+  width: 300px;
+  aspect-ratio: 4 / 3;
+  padding: 16px 18px;
+
+  border-radius: 1px;
+  border: 1.5px solid #0a1f44;
+  background-color: #eef3f8;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    #eef3f8 0px,
+    #eef3f8 14px,
+    #e3ebf3 14px,
+    #e3ebf3 15px
+  );
+
+  font-family: 'Roboto', sans-serif !important;
+  color: #091e42;
+  box-shadow:
+    0 6px 16px rgba(2, 10, 26, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(4px);
+  transition: opacity 0.15s ease, visibility 0.15s ease, transform 0.15s ease;
+}
+
+/* Mũi nhọn tam giác 2 lớp giống hệt khung thoại Hints */
+.plex-exit-bubble::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 26px;
+  border-width: 0 8px 10px 8px;
+  border-style: solid;
+  border-color: transparent transparent #0a1f44 transparent;
+}
+
+.plex-exit-bubble::after {
+  content: "";
+  position: absolute;
+  top: -7px;
+  left: 27.5px;
+  border-width: 0 6.5px 8px 6.5px;
+  border-style: solid;
+  border-color: transparent transparent #eef3f8 transparent;
+}
+
+.plex-exit-bubble.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* Khu 1: 20px */
+.exit-bubble-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: #091e42;
+  line-height: 1.2;
+}
+
+/* UPDATE: */
+/* Khu 2: 18px, letter-spacing 0.25px (giãn nhẹ ~1.005x tự nhiên) */
+.exit-bubble-msg {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 0.25px;
+  line-height: 1.32;
+  color: #091e42;
+}
+
+/* Khu 3: 2 nút hành động (sáng nhẹ +5% khi hover, lún tức thì ngay khi nhấn) */
+.exit-bubble-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.exit-action-btn {
+  height: 38px;
+  border-radius: 3px;
+  border: 1.5px solid #0a1f44;
+  font-family: 'Roboto', sans-serif !important;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.25px;
+  cursor: pointer;
+  box-shadow: 0 2px 0 #0a1f44, inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  transition: filter 0.12s ease;
+}
+
+.exit-action-btn:hover {
+  filter: brightness(1.05);
+}
+
+.exit-action-btn.btn-resume {
+  background: linear-gradient(180deg, #0284c7 0%, #0369a1 100%);
+  color: #ffffff;
+}
+.exit-action-btn.btn-resume:hover {
+  box-shadow: 0 2px 0 #0a1f44, 0 0 10px rgba(2, 132, 199, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.exit-action-btn.btn-confirm-exit {
+  background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+  color: #ffffff;
+}
+.exit-action-btn.btn-confirm-exit:hover {
+  box-shadow: 0 2px 0 #0a1f44, 0 0 10px rgba(239, 68, 68, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+/* Lún tức thì ngay khi bấm chuột xuống (chặn :hover đè bóng đáy) */
+.exit-action-btn:active {
+  transform: translateY(2px);
+  box-shadow: 0 0 0 #0a1f44, inset 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* ============================================================================
+ * KHỐI 11: BẢNG CHUYỂN VÒNG CHƠI (STAGE INTRO CARD - FLAT BLUE ALPHA 0.6)
+ * Hành vi tổng quát:
+ * - Bảng màu xanh đồng nhất (flat, không gradient), độ trong suốt alpha 0.6.
+ * - 3 Object bên trong chạy hiệu ứng Float In của PowerPoint theo đường tốc độ
+ *   tuyến tính (linear) và xuất hiện nối đuôi nhau từng vật một (canon).
+ * ============================================================================ */
+
+/* Lớp phủ căn giữa tuyệt đối bên trong vùng chơi #gameSpace */
+.plex-stage-overlay {
+  position: absolute;
+  top: calc(50% + 52px); /* Căn giữa vùng chơi bên dưới Header (104px / 2) */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10; /* Ngang hàng với .chem-board-wrapper (z-index: 10), nằm dưới Header (50) */
+  width: min(860px, 92%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.45s linear, visibility 0.45s linear; /* FadeOut 0.45s */
+}
+
+.plex-stage-overlay.stage-hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.plex-stage-card {
+  width: 100%;
+  aspect-ratio: 32 / 18;
+  border-radius: 26px;
+  border: 1.5px solid rgba(130, 185, 255, 0.55);
+  background-color: rgba(11, 52, 114, 0.6);
+  box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  font-family: 'Roboto', 'Bahnschrift', sans-serif !important;
+}
+
+@keyframes pptxFloatInLinear {
+  0%   { opacity: 0; transform: translateY(26px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.stage-obj {
+  opacity: 0;
+  transform: translateY(26px);
+}
+
+/* Toàn bộ 3 vật thể Float In tuyến tính hoàn tất gọn trong 0.45s */
+.plex-stage-overlay.is-animating .stage-obj-1 {
+  animation: pptxFloatInLinear 0.25s linear 0.00s forwards;
+}
+.plex-stage-overlay.is-animating .stage-obj-2 {
+  animation: pptxFloatInLinear 0.25s linear 0.10s forwards;
+}
+.plex-stage-overlay.is-animating .stage-obj-3 {
+  animation: pptxFloatInLinear 0.25s linear 0.20s forwards;
+}
+
+.stage-obj-1 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: #f1f5f9;
+  text-transform: uppercase;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.75);
+  margin-bottom: 6px;
+}
+
+.stage-obj-2 {
+  margin: 0;
+  font-size: 50px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: 1.5px;
+  color: #ffffff;
+  text-transform: uppercase;
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+}
+
+.stage-obj-3 {
+  margin-top: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.stage-badge-slot {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 8px rgba(0, 10, 30, 0.75));
+}
+
+/* Hiệu ứng FadeIn 0.25s cho bàn game sau khi bảng Intro tắt */
+.chem-board-wrapper {
+  top: calc(50% + 52px);
+  opacity: 1;
+  transition: opacity 0.25s ease-in;
+}
+
+.chem-board-wrapper.board-fading-out {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* ============================================================================
+ * KHỐI 12: HIỆU ỨNG MỞ BÀN CHƠI (BOARD FLOAT-CENTER-IN + TILE DIAGONAL CANNON)
+ * ============================================================================ */
+@keyframes boardFloatCenterIn {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.85);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.chem-board-wrapper.board-float-center-in {
+  animation: boardFloatCenterIn 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes tileDiagonalZoomIn {
+  0% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Các ô có cùng tổng (r + c) nhận chung --diag-delay nên lên đồng thời theo đường chéo */
+.chem-tile.tile-diag-intro {
+  animation: tileDiagonalZoomIn 1.75s cubic-bezier(0.25, 1, 0.50, 1) var(--diag-delay, 0s) both;
+}
+/* ============================================================================
+ * SỔ TAY CHỈNH ĐƯỜNG CONG: cubic-bezier(x1, y1, x2, y2)
+ * - Bộ số chuẩn hiện tại: (0.22, 1, 0.36, 1) -> Ease-Out mượt (lên nhanh, phanh êm).
+ * - Quy tắc 4 tham số để không chỉnh hỏng hiệu ứng:
+ *   + x1 (0.22) & x2 (0.36): Trục THỜI GIAN. Bắt buộc nằm trong [0 -> 1] (nhập
+ *     số âm hoặc > 1 là CSS tự hủy hiệu ứng). Muốn đầu vào chậm hơn thì tăng nhẹ
+ *     x1 lên ~0.35; muốn bật nhanh hơn thì giảm về ~0.12.
+ *   + y1 (1) & y2 (1): Trục BIÊN ĐỘ PHÓNG TO. Giữ nguyên bằng 1 để ô nở tới đúng
+ *     kích thước 100% rồi dừng êm. Nếu chỉnh > 1 (vd: 1.2) ô sẽ phình lố rồi
+ *     giật ngược lại; nếu chỉnh < 0 ô sẽ bị co âm trước khi nở.
+ * ============================================================================ */

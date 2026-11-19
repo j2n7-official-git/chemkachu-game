@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chemistry Pikachu Game</title>
+
+<!-- Đường dẫn chuẩn tới file CSS trong thư mục src/ -->
+<link rel="stylesheet" href="src/chem_plex_theme.css">
+</head>
+<body>
+
+<div class="chem-viewport">
+  
+  <!-- Cột Navbar Slot Dọc sát mép trái (19.05vw x 100vh) -->
+  <div id="navSlot" class="chem-navbar-slot">
+    [ NAVBAR SLOT DỌC ]
+  </div>
+
+  <!-- Phần không gian còn lại màu xanh Solid Plex -->
+  <main id="gameSpace" class="chem-game-space is-menu-state">
+    <!-- MÀN HÌNH ĐĂNG NHẬP ĐẦU GAME (MENU_VIEW) -->
+    <section id="menuView" class="plex-menu-overlay">
+      <div class="plex-menu-card">
+        <span class="plex-version-tag">ver 3.02.855_devT2</span>
+
+        <!-- Ảnh Tiêu Đề Chính Thức (Quả cầu + Chữ CHEMKACHU) -->
+        <div class="plex-menu-brand">
+          <img src="./src/logo/chemkachu_title_ofc.png" alt="CHEMKACHU" class="plex-title-banner" />
+        </div>
+
+        <!-- Form Nhập Liệu -->
+        <div class="plex-menu-form">
+          <!-- Hàng 1: Họ và tên + Conversation Bubble báo lỗi -->
+          <div class="plex-form-row">
+            <label for="playerNameInput" class="plex-menu-label">HỌ VÀ TÊN</label>
+            <div class="plex-input-wrapper">
+              <div id="nameErrorBubble" class="plex-error-bubble" role="alert">
+                ERROR: Bạn cần nhập tên trước khi chơi
+              </div>
+              <input
+                type="text"
+                id="playerNameInput"
+                class="plex-name-input"
+                maxlength="35"
+                autocomplete="off"
+                spellcheck="false"
+              />
+            </div>
+          </div>
+
+          <!-- Hàng 2: Chọn mức độ với khung viền xanh cyan trượt -->
+          <div class="plex-form-row">
+            <span class="plex-menu-label">CHỌN MỨC ĐỘ</span>
+            <div id="menuDiffGroup" class="menu-diff-group">
+              <span id="diffSliderFrame" class="diff-slider-frame" aria-hidden="true"></span>
+
+              <button type="button" class="menu-diff-btn easy is-selected" data-diff="easy">DỄ</button>
+              <button type="button" class="menu-diff-btn medium" data-diff="medium">TRUNG BÌNH</button>
+              <button type="button" class="menu-diff-btn hard" data-diff="hard">KHÓ</button>
+            </div>
+          </div>
+
+          <!-- Hàng 3: Nút CHƠI -->
+          <div class="plex-menu-actions">
+            <button type="button" id="startGameBtn" class="plex-start-btn">CHƠI</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MÀN HÌNH GIỚI THIỆU VÒNG CHƠI (STAGE INTRO OVERLAY - SLIDE TRUNG GIAN) -->
+    <section id="stageIntroOverlay" class="plex-stage-overlay stage-hidden" aria-live="polite">
+      <!-- Bảng xanh flat độ kính 0.6 (tỉ lệ ~32:18 theo mẫu thiết kế) -->
+      <div class="plex-stage-card">
+        <!-- Object 1: Hiển thị mức độ đang chơi -->
+        <div id="stageIntroDiff" class="stage-obj stage-obj-1">ĐỘ KHÓ: DỄ</div>
+
+        <!-- Object 2: Tiêu đề vòng chơi cỡ 50px -->
+        <h2 id="stageIntroTitle" class="stage-obj stage-obj-2">VÒNG 1</h2>
+
+        <!-- Object 3: Hàng 8 huy hiệu rỗng (cách VÒNG 1 đúng 30px) -->
+        <div id="stageBadgeList" class="stage-obj stage-obj-3" aria-label="Tiến độ 8 vòng chơi">
+          <!-- JavaScript sẽ tự động nhân bản đúng 8 thẻ <img> chem_win_slotted.png vào đây -->
+        </div>
+      </div>
+    </section>
+    
+    <!-- 🟢 ĐÃ BỔ SUNG: Khung SVG hiển thị đường Neon kết nối giữa 2 ô (z-index: 20) -->
+    <svg id="svgConnectLayer" class="chem-svg-layer"></svg>
+
+    <!-- KHUNG TỔNG HEADER CONTAINER (VERSION MỚI) -->
+    <!-- DẢI HEADER THỐNG NHẤT MỚI (CÁCH LỀ TRÁI PHẢI 10PX) -->
+    <header class="chem-unified-header">
+      <div class="plex-exit-wrapper" id="exitWrapper">
+        <button id="exitGameBtn" class="plex-orb-btn exit-orb" title="Thoát màn chơi"></button>
+
+        <div id="exitConfirmBubble" class="plex-exit-bubble" role="dialog" aria-modal="true" aria-labelledby="exitBubbleTitle">
+          <div id="exitBubbleTitle" class="exit-bubble-title">Thoát game?</div>
+          <p class="exit-bubble-msg">
+            Thoát bây giờ sẽ mất toàn bộ tiến trình đang chơi. Bạn chắc chắn chứ?
+          </p>
+          <div class="exit-bubble-actions">
+            <button type="button" id="resumeGameBtn" class="exit-action-btn btn-resume">Chơi tiếp</button>
+            <button type="button" id="confirmExitBtn" class="exit-action-btn btn-confirm-exit">Thoát</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="plex-divider"></div>
+
+      <div class="plex-stats-row">
+        <!-- Block 1: Mức độ -->
+        <div class="plex-stat-col col-difficulty">
+          <div class="plex-stat-label" id="lblDifficulty">MỨC ĐỘ</div>
+          <div class="plex-stat-box box-difficulty easy" id="boxDifficulty">
+            <span class="plex-stat-value" id="valDifficulty"></span>
+          </div>
+        </div>
+
+        <!-- Block 2: Tên người chơi (Được bù thêm 25px chiều rộng) -->
+        <div class="plex-stat-col col-player">
+          <div class="plex-stat-label" id="lblPlayer">TÊN NGƯỜI CHƠI</div>
+          <div class="plex-stat-box">
+            <span class="plex-stat-value" id="playerNameDisplay"></span>
+          </div>
+        </div>
+
+        <!-- Block 3: Điểm -->
+        <div class="plex-stat-col col-score">
+          <div class="plex-stat-label" id="lblScore">ĐIỂM</div>
+          <div class="plex-stat-box">
+            <span class="plex-stat-value" id="scoreBox">0</span>
+          </div>
+        </div>
+
+        <!-- Block 4: Thời gian (Vạch tích phân 2 lớp) -->
+        <div class="plex-stat-col col-timer">
+          <div class="plex-stat-label" id="lblTime">THỜI GIAN</div>
+          <div class="plex-stat-box box-timer" id="boxTimer">
+            <span class="plex-stat-value timer-text-base" id="timerBox">120</span>
+            <div class="timer-fill-layer">
+              <span class="plex-stat-value timer-text-fill" id="timerBoxFill">120</span>
+            </div>
+          </div>
+        </div>
+
+      <div class="plex-divider"></div>
+
+      <div class="plex-hint-wrapper" id="hintWrapper">
+        <button id="hintBtn" class="plex-orb-btn hint-orb" title="Dùng gợi ý"></button>
+        <span id="hintCount" class="plex-hint-badge">5</span>
+
+        <!-- Manga Conversation Box khi hết lượt trợ giúp -->
+        <div class="plex-manga-bubble" id="hintOutBubble" role="tooltip">
+          Bạn đã hết lượt trợ giúp
+        </div>
+      </div>
+    </header>
+
+    <!-- 3. KHU VỰC HIỂN THỊ MA TRẬN BÀN CHƠI PIKACHU -->
+    <div id="boardWrapper" class="chem-board-wrapper">
+      <div id="boardGrid" class="chem-board-grid"></div>
+    </div>
+
+  </main>
+
+</div>
+
+<!-- 🔑 CHÌA KHÓA LIÊN KẾT: Nhúng duy nhất file main.js dạng ES6 Module -->
+<script type="module" src="js/main.js"></script>
+
+</body>
+</html>
