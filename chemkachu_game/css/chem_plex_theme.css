@@ -14,8 +14,8 @@
  * ============================================================================ */
 @font-face {
   font-family: 'Roboto';
-  src: url('fonts/Roboto-VariableFont_wdth,wght.ttf') format('truetype-variations'),
-       url('fonts/Roboto-VariableFont_wdth,wght.ttf') format('truetype');
+  src: url('../src/fonts/Roboto-VariableFont_wdth,wght.ttf') format('truetype-variations'),
+       url('../srcfonts/Roboto-VariableFont_wdth,wght.ttf') format('truetype');
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
@@ -99,7 +99,7 @@ html, body {
   height: 100vh;
   z-index: 1;
   background-color: #0f2847;
-  background-image: url('background-image/chem-right-side-background.png');
+  background-image: url('../src/background-image/chem-right-side-background.png');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -167,16 +167,16 @@ html, body {
 .plex-orb-btn:hover:not(:disabled) { transform: scale(1.05); }
 .plex-orb-btn:active:not(:disabled) { transform: scale(0.96); }
 
-.plex-orb-btn.exit-orb { background-image: url('ui_cpnt_buttons/exitsgame/exit_icon_normal.png'); }
-.plex-orb-btn.exit-orb:hover { background-image: url('ui_cpnt_buttons/exitsgame/exit_icon_hover.png'); }
-.plex-orb-btn.exit-orb:active { background-image: url('ui_cpnt_buttons/exitsgame/exit_icon_pressed.png'); }
+.plex-orb-btn.exit-orb { background-image: url('../src/ui_cpnt_buttons/exitsgame/exit_icon_normal.png'); }
+.plex-orb-btn.exit-orb:hover { background-image: url('../src/ui_cpnt_buttons/exitsgame/exit_icon_hover.png'); }
+.plex-orb-btn.exit-orb:active { background-image: url('../src/ui_cpnt_buttons/exitsgame/exit_icon_pressed.png'); }
 
-.plex-orb-btn.hint-orb { background-image: url('ui_cpnt_buttons/hintsgame/hints_btn_normal.png'); }
-.plex-orb-btn.hint-orb:hover:not(:disabled) { background-image: url('ui_cpnt_buttons/hintsgame/hints_btn_hover.png'); }
+.plex-orb-btn.hint-orb { background-image: url('../src/ui_cpnt_buttons/hintsgame/hints_btn_normal.png'); }
+.plex-orb-btn.hint-orb:hover:not(:disabled) { background-image: url('../src/ui_cpnt_buttons/hintsgame/hints_btn_hover.png'); }
 .plex-orb-btn.hint-orb:active:not(:disabled) { background-image: url('ui_cpnt_buttons/hintsgame/hints_btn_pressed.png'); }
 
 .plex-orb-btn.hint-orb:disabled {
-  background-image: url('ui_cpnt_buttons/hintsgame/hints_btn_disabled.png');
+  background-image: url('../src/ui_cpnt_buttons/hintsgame/hints_btn_disabled.png');
   cursor: default;
 }
 
@@ -1171,3 +1171,309 @@ html, body {
  *     kích thước 100% rồi dừng êm. Nếu chỉnh > 1 (vd: 1.2) ô sẽ phình lố rồi
  *     giật ngược lại; nếu chỉnh < 0 ô sẽ bị co âm trước khi nở.
  * ============================================================================ */
+
+/* ============================================================================
+ * KHỐI 13: HIỆU ỨNG PHÁO HOA TẠI CHỖ & BẢNG TÍNH ĐIỂM TRẠM DỪNG (LUẬT V2)
+ * Hành vi tổng quát:
+ * 1. Giai đoạn 1 (Tại chỗ): Lớp chữ "STAGE COMPLETED" và 3 cụm pháo hoa
+ *    (mỗi cụm 5 khối vuông 15x15px kế thừa từ .chem-shatter-particle-15) bung
+ *    tỏa hình cánh cung rồi rơi tự do ngay trên mặt bàn chơi (z-index: 38).
+ * 2. Giai đoạn 2 (Trạm dừng): Khung tỉ lệ 32:18 mở bằng hiệu ứng zoom-gentle,
+ *    chứa bảng table 2x2 thực hiện chuỗi 3 nhịp: Đếm nháp vàng (+50/+80/+150
+ *    mỗi 0.1s) -> Trượt ngang nhập điểm -> Va chạm 90% kích hoạt zoom-bounce
+ *    1.12x về 1.0x trong 1s cho điểm tổng.
+ * Kỹ thuật tối ưu hiệu năng:
+ * - Toàn bộ chuyển động chỉ tác động lên thuộc tính `transform` và `opacity`
+ *   để trình duyệt xử lý trực tiếp trên GPU (Compositor Layer), tránh gây
+ *   tính toán lại bố cục (Layout Reflow) gây giật khung hình.
+ * ============================================================================ */
+
+/* --- 13.1. LỚP PHÁO HOA & DÒNG CHỮ STAGE COMPLETED NGAY TRÊN BÀN CHƠI --- */
+.stage-completed-layer {
+  position: absolute;
+  top: calc(50% + 52px); /* Căn giữa đúng tâm vùng bàn chơi bên dưới Header 104px */
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 38; /* Nằm trên mặt bàn (10) & dây nối SVG (20), dưới Header (50) */
+  width: min(860px, 92%);
+  aspect-ratio: 32 / 18;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none; /* Không cản thao tác chuột nếu người chơi bấm nhầm */
+  opacity: 1;
+  transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+.stage-completed-layer.stage-hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.stage-completed-text {
+  font-family: 'Roboto', 'Bahnschrift', sans-serif !important;
+  font-size: clamp(32px, 3.6vw, 48px);
+  font-weight: 900;
+  letter-spacing: 2px;
+  color: #ffffff;
+  text-transform: uppercase;
+  text-align: center;
+  text-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.9),
+    0 0 22px rgba(74, 222, 128, 0.75);
+  animation: stageTextPopIn 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes stageTextPopIn {
+  0%   { opacity: 0; transform: scale(0.78); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Lệnh kế thừa CSS (Multi-class Inheritance):
+ * Thẻ pháo hoa trong JS sẽ mang đồng thời 2 class:
+ *   class="chem-shatter-particle-15 chem-firework-particle"
+ * Nhờ đó kế thừa trọn vẹn hình khối 15x15px, bo góc 3px, màu xanh lá phát sáng
+ * của KHỐI 8, đồng thời ghi đè quỹ đạo bay thành 5 tia hình cánh cung rơi chậm. */
+/* Tia pháo hoa đa sắc phát quang: dùng biến --fw-color & --fw-glow do JS cấp cho từng cụm */
+.chem-shatter-particle-15.chem-firework-particle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 15%, var(--fw-color, #facc15) 70%);
+  box-shadow:
+    0 0 8px #ffffff,
+    0 0 16px var(--fw-glow, #f59e0b),
+    0 0 28px var(--fw-glow, #f59e0b);
+  z-index: 39;
+  animation: fireworkRadialBurst 1.45s cubic-bezier(0.16, 1, 0.3, 1) var(--fw-delay, 0s) forwards;
+}
+
+/* Quỹ đạo bung tỏa 360°: bùng nổ nhanh ra vòng ngoài rồi rơi nhẹ theo trọng lực */
+@keyframes fireworkRadialBurst {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.2);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(calc(var(--fw-dx) * 0.75), calc(var(--fw-dy) * 0.75)) scale(1.35);
+  }
+  55% {
+    opacity: 1;
+    transform: translate(var(--fw-dx), var(--fw-dy)) scale(0.95);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(var(--fw-dx) * 1.15), calc(var(--fw-dy) + 55px)) scale(0.15);
+  }
+}
+
+/* --- 13.2. KHUNG BẢNG TRẠM DỪNG (32CM x 18CM -> ASPECT-RATIO 32/18) --- */
+.plex-stage-overlay.result-overlay {
+  z-index: 42; /* Nằm trên bàn chơi, dưới Header (50) */
+}
+
+.plex-stage-card.result-card {
+  background: linear-gradient(180deg, rgba(10, 52, 118, 0.88) 0%, rgba(5, 31, 78, 0.92) 100%);
+  border: 1.5px solid rgba(130, 185, 255, 0.65);
+  box-shadow:
+    0 22px 48px rgba(0, 5, 20, 0.88),
+    inset 0 1px 1px rgba(255, 255, 255, 0.35);
+  padding: clamp(18px, 2.6vh, 28px) clamp(20px, 3vw, 40px);
+  justify-content: space-between;
+}
+
+/* Hiệu ứng zoom-gentle nhẹ nhàng khi mở bảng Trạm Dừng */
+@keyframes cardZoomGentle {
+  0% {
+    opacity: 0;
+    transform: scale(0.90);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.plex-stage-overlay.result-overlay.is-zoom-gentle .plex-stage-card.result-card {
+  animation: cardZoomGentle 0.42s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.stage-res-subtitle {
+  font-size: clamp(16px, 1.4vw, 20px);
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: #f1f5f9;
+  text-transform: uppercase;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
+}
+
+.stage-res-title {
+  margin: 2px 0 8px;
+  font-size: clamp(36px, 3.8vw, 52px);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: 1.5px;
+  color: #ffffff;
+  text-transform: uppercase;
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.85);
+}
+
+/* --- 13.3. BẢNG TABLE 2x2 TỔNG KẾT ĐIỂM & ĐIỂM THƯỞNG THỜI GIAN --- */
+/* Lệnh lạ cần biết:
+ * - border-collapse: collapse -> Gộp 2 đường viền kề nhau của các ô <td> thành
+ *   1 đường kẻ mảnh duy nhất (1.5px), tránh tình trạng viền giữa bị dày gấp đôi.
+ * - table-layout: fixed -> Khóa cứng tỉ lệ 2 cột 50% - 50%, ngăn bảng bị giật
+ *   chiều ngang khi con số bên trong tăng từ 2 chữ số lên 4-5 chữ số. */
+.stage-result-table {
+  width: min(640px, 94%);
+  border-collapse: collapse;
+  table-layout: fixed;
+  background: rgba(14, 58, 128, 0.55);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+}
+
+.stage-result-table td {
+  width: 50%;
+  height: 54px;
+  padding: 8px 16px;
+  border: 1.5px solid rgba(190, 220, 255, 0.75);
+  text-align: center;
+  vertical-align: middle;
+  font-family: 'Roboto', sans-serif !important;
+  font-size: clamp(18px, 1.6vw, 24px);
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+}
+
+/* Sân khấu chứa cặp số: [Điểm gốc] + [Số cộng nháp vàng] */
+.score-merge-stage {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.res-main-score {
+  display: inline-block;
+  font-weight: 800;
+  color: #ffffff;
+  transform-origin: center center;
+}
+
+/* Hiệu ứng zoom-bounce nhẹ khi số nháp bay chạm 90% vào số điểm gốc:
+ * Phóng to đúng 1.12x ở nhịp 18% rồi giảm êm về 1.0x trong tổng thời gian 1s */
+@keyframes scoreZoomBounce {
+  0%   { transform: scale(1); color: #ffffff; }
+  18%  { transform: scale(1.12); color: #fde047; text-shadow: 0 0 14px rgba(250, 204, 21, 0.9); }
+  100% { transform: scale(1); color: #ffffff; }
+}
+
+.res-main-score.is-bouncing {
+  animation: scoreZoomBounce 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* Số cộng nháp màu vàng nằm bên phải số điểm gốc */
+.res-draft-bonus {
+  display: inline-block;
+  font-size: clamp(15px, 1.25vw, 18px);
+  font-weight: 800;
+  color: #facc15;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.9);
+  opacity: 1;
+  /* Trượt nhanh 0.55s (gia tốc mượt) tới điểm chạm 90% mép số gốc */
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.12s ease;
+}
+
+.res-draft-bonus.is-merged-hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.res-time-detail {
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* --- 13.4. HÀNG HUY HIỆU TIẾN ĐỘ & NÚT CHƠI TIẾP --- */
+.stage-res-badges {
+  margin: 10px 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Huy hiệu các vòng trước đã sở hữu */
+.stage-badge-slot.is-earned {
+  filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.85));
+  transform: scale(1.08);
+}
+
+/* Hiệu ứng BOOM: Phóng lớn từ trên không (2.5x) rồi dập mạnh xuống khung kèm sóng sáng */
+@keyframes badgeBoomSlam {
+  0% {
+    opacity: 0;
+    transform: scale(2.5) rotate(-14deg);
+    filter: brightness(2.2) drop-shadow(0 0 24px #ffffff);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(0.86) rotate(4deg);
+    filter: brightness(1.6) drop-shadow(0 0 20px rgba(56, 189, 248, 1));
+  }
+  78% {
+    transform: scale(1.18) rotate(-2deg);
+    filter: brightness(1.3) drop-shadow(0 0 14px rgba(250, 204, 21, 0.95));
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.08) rotate(0deg);
+    filter: drop-shadow(0 0 9px rgba(56, 189, 248, 0.9));
+  }
+}
+
+/* Huy hiệu vòng vừa thắng: chờ bảng mở xong (0.38s) rồi dập BOOM vào khay */
+.stage-badge-slot.is-boom-new {
+  opacity: 0;
+  animation: badgeBoomSlam 0.65s cubic-bezier(0.22, 1, 0.36, 1) 0.38s forwards;
+}
+
+.stage-next-btn {
+  width: min(320px, 80%);
+  height: 50px;
+  border-radius: 4px;
+  border: 2px solid #ffffff;
+  background: radial-gradient(circle at 50% 50%, #0a3c8c 0%, #052259 100%);
+  color: #facc15;
+  font-family: 'Roboto', 'Bahnschrift', sans-serif !important;
+  font-size: clamp(18px, 1.55vw, 23px);
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  box-shadow:
+    0 6px 16px rgba(0, 0, 0, 0.65),
+    inset 0 1px 1px rgba(255, 255, 255, 0.35);
+  transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
+}
+
+.stage-next-btn:hover:not(:disabled) {
+  filter: brightness(1.16);
+  box-shadow:
+    0 0 14px rgba(56, 189, 248, 0.75),
+    0 8px 20px rgba(0, 0, 0, 0.75);
+}
+
+.stage-next-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* Vô hiệu hóa nhẹ nút CHƠI TIẾP trong lúc đang chạy hiệu ứng cộng nháp */
+.stage-next-btn:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}

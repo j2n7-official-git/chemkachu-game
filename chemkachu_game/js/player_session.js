@@ -135,7 +135,7 @@ startBtn.addEventListener('click', async () => {
           action: 'start',
           player_name: cleanName,
           difficulty: currentSession.difficulty,
-          total_stages: 8
+          total_stages: ({ easy: 8, medium: 10, hard: 12 }[currentSession.difficulty] || 8)
         })
       });
       const data = await res.json();
@@ -183,5 +183,37 @@ export async function finishSessionInDB({ playStatus, score = null, currentStage
     });
   } catch (err) {
     console.warn('Không lưu được trạng thái vào MySQL:', err);
+  }
+}
+
+export async function saveStageLogInDB({
+  stageNumber,
+  baseScore,
+  timeLeft,
+  bonusRate,
+  timeBonus,
+  stageTotal
+}) {
+  const session = getActivePlayerSession();
+  if (!session || !session.recordId) return;
+
+  try {
+    await fetch('./api/save_score.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      keepalive: true,
+      body: JSON.stringify({
+        action: 'save_stage',
+        session_id: session.recordId,
+        stage_number: stageNumber,
+        base_score: baseScore,
+        time_left: timeLeft,
+        bonus_rate: bonusRate,
+        time_bonus: timeBonus,
+        stage_total: stageTotal
+      })
+    });
+  } catch (err) {
+    console.warn('Không lưu được log vòng chơi vào MySQL:', err);
   }
 }

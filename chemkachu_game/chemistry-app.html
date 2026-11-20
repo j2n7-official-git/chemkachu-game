@@ -6,7 +6,7 @@
 <title>Chemistry Pikachu Game</title>
 
 <!-- Đường dẫn chuẩn tới file CSS trong thư mục src/ -->
-<link rel="stylesheet" href="src/chem_plex_theme.css">
+<link rel="stylesheet" href="css/chem_plex_theme.css">
 </head>
 <body>
 
@@ -22,7 +22,7 @@
     <!-- MÀN HÌNH ĐĂNG NHẬP ĐẦU GAME (MENU_VIEW) -->
     <section id="menuView" class="plex-menu-overlay">
       <div class="plex-menu-card">
-        <span class="plex-version-tag">ver 3.02.855_devT2</span>
+        <span class="plex-version-tag">ver 3.2.900_devT3</span>
 
         <!-- Ảnh Tiêu Đề Chính Thức (Quả cầu + Chữ CHEMKACHU) -->
         <div class="plex-menu-brand">
@@ -159,6 +159,44 @@
     </header>
 
     <!-- 3. KHU VỰC HIỂN THỊ MA TRẬN BÀN CHƠI PIKACHU -->
+    <!-- LỚP PHÁO HOA & CHỮ STAGE COMPLETED NGAY TRÊN BÀN CHƠI (GIAI ĐOẠN 1) -->
+    <div id="stageCompletedBanner" class="stage-completed-layer stage-hidden" aria-live="polite">
+      <div class="stage-completed-text">VÒNG CHƠI HOÀN THÀNH</div>
+    </div>
+
+    <!-- BẢNG TÍNH ĐIỂM TRẠM DỪNG SAU MỖI VÒNG (GIAI ĐOẠN 2 - TỈ LỆ 32:18) -->
+    <section id="stageResultOverlay" class="plex-stage-overlay result-overlay stage-hidden" aria-live="polite">
+      <div class="plex-stage-card result-card">
+        <div class="stage-res-header">
+          <div class="stage-res-subtitle">HOÀN THÀNH</div>
+          <h2 id="resultStageTitle" class="stage-res-title">VÒNG 1</h2>
+        </div>
+
+        <table class="stage-result-table" aria-label="Bảng tổng kết điểm vòng chơi">
+          <tbody>
+            <tr>
+              <td class="res-label-cell">TỔNG ĐIỂM</td>
+              <td class="res-value-cell">
+                <div class="score-merge-stage">
+                  <span id="resultBaseScore" class="res-main-score">0</span>
+                  <span id="resultDraftBonus" class="res-draft-bonus">+0</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td class="res-label-cell">THỜI GIAN DƯ</td>
+              <td class="res-value-cell">
+                <span id="resultTimeDetail" class="res-time-detail">+50 (0s left)</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div id="resultBadgeList" class="stage-res-badges" aria-label="Huy hiệu tiến độ"></div>
+
+        <button type="button" id="nextStageBtn" class="stage-next-btn">CHƠI TIẾP</button>
+      </div>
+    </section>
     <div id="boardWrapper" class="chem-board-wrapper">
       <div id="boardGrid" class="chem-board-grid"></div>
     </div>

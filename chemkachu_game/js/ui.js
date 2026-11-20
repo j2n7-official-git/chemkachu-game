@@ -7,11 +7,18 @@ import { REACTION_DATABASE, checkChemicalReaction } from './chem_reactions.js';
 import { checkPathPikachu } from './pathfinding.js';
 
 let remainingHints = 5;
-let currentScore = 0;
 let currentBoardMatrix = [];
 let firstSelectedTile = null;
 let isBoardDealing = false;
 let dealFallbackTimerId = null;
+
+let currentScore = 0;
+
+export function setCurrentScore(newScore) {
+  currentScore = Number(newScore) || 0;
+  const scoreBox = document.getElementById('scoreBox');
+  if (scoreBox) scoreBox.innerText = currentScore;
+}
 
 //mục đích update: khóa bàn & hẹn giờ kết thúc ván//
 let isBoardLocked = false;
@@ -38,9 +45,42 @@ const soundOpenMap = {
  * KHỐI 1: BỘ ĐẾM THỜI GIAN THEO GIÂY (80s / 120s / 150s) & DỌN BÀN CHƠI
  * ============================================================================ */
 let gameTimerId = null;
+let currentRemainingSeconds = 0;
 
+export function getRemainingSeconds() {
+  return currentRemainingSeconds;
+}
+
+/**
+ * ============================================================================
+ * HÀM: startGameTimer(durationSeconds, onTimeUpCallback)
+ * Mục đích:
+ * - Chạy đồng hồ đếm ngược theo thời gian thực (80s / 120s / 150s) đồng bộ
+ *   giữa con số hiển thị và thanh tiến trình vàng tích phân 2 lớp trên Header.
+ *
+ * Cơ chế & Kỹ thuật tối ưu:
+ * 1. performance.now() + requestAnimationFrame(tick):
+ *    - Thay vì dùng setInterval(1000) dễ bị trễ nhịp (drift) và giật cục, hàm
+ *      đo thời gian trôi qua thực tế từ mốc `startTime` để kéo thanh `--timer-pct`
+ *      mượt ở tần số quét màn hình (60fps+), đồng thời giữ số giây chuẩn xác.
+ * 2. Đồng bộ 2 lớp chữ (#timerBox & #timerBoxFill):
+ *    - Lớp dưới chữ vàng trên nền tối; lớp trên chữ xanh đậm nằm trong vùng
+ *      `clip-path` màu vàng, tạo hiệu ứng đổi màu chữ tự động khi vạch rút qua.
+ * 3. Cập nhật `currentRemainingSeconds` liên tục:
+ *    - Lưu sẵn số giây làm tròn lên (`Math.ceil`) để hàm `getRemainingSeconds()`
+ *      chốt ngay thành tích giây dư khi người chơi nối sạch cặp cuối.
+ * 4. Đồng bộ khung vẽ khi hết giờ (requestAnimationFrame + setTimeout 60ms):
+ *    - Khóa bàn (`isBoardLocked = true`), ép trình duyệt vẽ xong số `0` và thanh
+ *      cạn `0%` lên màn hình rồi mới gọi `onTimeUpCallback` (tránh bị đóng băng
+ *      giao diện ở số 1 nếu callback mở hộp thoại hoặc chuyển cảnh).
+ *
+ * @param {number} durationSeconds - Tổng thời gian của vòng chơi (tính bằng giây).
+ * @param {Function} [onTimeUpCallback] - Hàm xử lý khi đồng hồ chạm mốc 0s.
+ * ============================================================================
+ */
 export function startGameTimer(durationSeconds, onTimeUpCallback) {
   stopGameTimer();
+  currentRemainingSeconds = durationSeconds;
   const timerBox = document.getElementById('timerBox');
   const timerBoxFill = document.getElementById('timerBoxFill');
   const timerContainer = timerBox?.closest('.box-timer');
@@ -66,6 +106,7 @@ export function startGameTimer(durationSeconds, onTimeUpCallback) {
     }
 
     const displaySec = Math.ceil(remainingExact);
+    currentRemainingSeconds = displaySec;
     if (displaySec !== lastDisplayedSec) {
       lastDisplayedSec = displaySec;
       updateText(displaySec);
@@ -73,11 +114,11 @@ export function startGameTimer(durationSeconds, onTimeUpCallback) {
 
     if (remainingExact <= 0) {
       gameTimerId = null;
-      isBoardLocked = true; // Khóa click ngay lập tức (sẵn sàng cho hiệu ứng xám hóa ô sau này)
+      currentRemainingSeconds = 0;
+      isBoardLocked = true;
       updateText(0);
       if (timerContainer) timerContainer.style.setProperty('--timer-pct', '0%');
 
-      // Chờ trình duyệt vẽ (paint) xong số 0 & thanh cạn 0% rồi mới chạy callback kết thúc
       requestAnimationFrame(() => {
         stageEndTimerId = setTimeout(() => {
           stageEndTimerId = null;
@@ -129,38 +170,56 @@ export function cleanupBoardSession() {
   }
 }
 
-/* ============================================================================
- * KHỐI 2: BỘ CHỌN STOCK PHƯƠNG TRÌNH ĐỘC LẬP (KHÓA CỨNG NHÓM CHẤT TỪ ĐẦU)
- * Hành vi tổng quát:
- * - Bốc đúng `numPairs` cặp phương trình từ REACTION_DATABASE sao cho các cặp
- *   không phản ứng chéo lẫn nhau (Induced Matching trong lý thuyết đồ thị).
- * - Nhờ không có phản ứng chéo, người chơi không bao giờ ăn nhầm cặp làm dư
- *   ra 2 chất lẻ không phản ứng được ở cuối ván.
- * - Với bàn lớn (8x5 = 20 cặp, 10x6 = 30 cặp), các cặp vượt quá số lượng độc
- *   lập tối đa sẽ được nhân bản từ chính nhóm phương trình đã chọn này.
- * Lệnh lạ cần biết:
- * - usedChems.some(x => ...): Hàm duyệt mảng trả về `true` ngay lập tức nếu
- *   có ít nhất 1 phần tử thỏa điều kiện (dừng sớm nên chạy rất nhanh).
- * ============================================================================ */
+/**
+ * ============================================================================
+ * UPDATE KHỐI 2: HÀM: selectCleanReactionStock(numPairs)
+ * Mục đích:
+ * - Bốc ngẫu nhiên `numPairs` cặp phương trình độc lập (không phản ứng chéo)
+ *   nhưng áp dụng cơ chế Weighted Random (trọng số phổ biến).
+ *
+ * Cơ chế tối ưu trải nghiệm người chơi:
+ * - Đếm tần suất xuất hiện (degree) của từng chất trong REACTION_DATABASE.
+ * - Các cặp chứa chất quen thuộc (HCl, NaOH, O2, CuSO4...) được nhân trọng số
+ *   cao gấp nhiều lần so với chất hiếm/khó (như O3, Hg, Cr2O3), giúp người chơi
+ *   dễ nhập cuộc hơn mà vẫn đảm bảo tính ngẫu nhiên không lặp pattern.
+ * ============================================================================
+ */
 function selectCleanReactionStock(numPairs) {
+  // 1. Tính độ phổ biến (bậc đồ thị) của từng chất trong từ điển
+  const substanceFreq = new Map();
+  for (const rx of REACTION_DATABASE) {
+    substanceFreq.set(rx.a, (substanceFreq.get(rx.a) || 0) + 1);
+    substanceFreq.set(rx.b, (substanceFreq.get(rx.b) || 0) + 1);
+  }
+
+  // 2. Gán trọng số cho từng phản ứng (càng chứa chất thông dụng điểm càng cao)
+  const weightedDB = REACTION_DATABASE.map(rx => {
+    const freqA = substanceFreq.get(rx.a) || 1;
+    const freqB = substanceFreq.get(rx.b) || 1;
+    // Chất hiếm (bậc 1 như Ag+O3) chỉ có trọng số thấp (~2), chất quen thuộc trọng số ~15-40
+    const weight = Math.pow(freqA + freqB, 1.35);
+    return { rx, weight };
+  });
+
   let bestIndependentPairs = [];
 
-  // Thử ngẫu nhiên 60 lần để tìm tập hợp các cặp phương trình độc lập lớn nhất
   for (let attempt = 0; attempt < 60; attempt++) {
-    const shuffledDB = [...REACTION_DATABASE];
-    for (let i = shuffledDB.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffledDB[i], shuffledDB[j]] = [shuffledDB[j], shuffledDB[i]];
-    }
+    // 3. Thuật toán Efraimidis-Spirakis: Tráo ngẫu nhiên có trọng số (O(N log N))
+    // Không tạo pattern cố định nhưng luôn ưu tiên các phương trình dễ/quen thuộc lên đầu
+    const shuffledDB = weightedDB
+      .map(item => ({
+        rx: item.rx,
+        sortKey: Math.pow(Math.random(), 1 / item.weight)
+      }))
+      .sort((a, b) => b.sortKey - a.sortKey)
+      .map(item => item.rx);
 
     const chosenPairs = [];
     const usedChems = [];
 
     for (const rx of shuffledDB) {
-      // Bỏ qua nếu chất a hoặc chất b đã xuất hiện trong Stock
       if (usedChems.includes(rx.a) || usedChems.includes(rx.b)) continue;
 
-      // Kiểm tra phản ứng chéo: a và b không được phản ứng với bất kỳ chất nào đã chọn
       const hasCrossReaction = usedChems.some(
         existing =>
           checkChemicalReaction(rx.a, existing).valid ||
@@ -170,22 +229,16 @@ function selectCleanReactionStock(numPairs) {
       if (!hasCrossReaction) {
         chosenPairs.push(rx);
         usedChems.push(rx.a, rx.b);
-
-        if (chosenPairs.length === numPairs) {
-          break;
-        }
+        if (chosenPairs.length === numPairs) break;
       }
     }
 
     if (chosenPairs.length > bestIndependentPairs.length) {
       bestIndependentPairs = chosenPairs;
     }
-    if (bestIndependentPairs.length === numPairs) {
-      break;
-    }
+    if (bestIndependentPairs.length === numPairs) break;
   }
 
-  // Khóa cứng danh sách cặp phương trình của ván này (tuyệt đối không lấy thêm từ ngoài)
   const lockedPairs = [...bestIndependentPairs];
   let repeatIdx = 0;
   while (lockedPairs.length < numPairs) {
@@ -193,7 +246,6 @@ function selectCleanReactionStock(numPairs) {
     repeatIdx++;
   }
 
-  // Trải phẳng danh sách cặp phương trình thành mảng 1 chiều gồm (2 * numPairs) ô chất
   const stockTiles = [];
   for (const rx of lockedPairs) {
     stockTiles.push(rx.a, rx.b);
@@ -211,9 +263,11 @@ function selectCleanReactionStock(numPairs) {
  * - [arr[i], arr[j]] = [arr[j], arr[i]]: Destructuring Swap, hoán đổi trực tiếp
  *   2 phần tử trong mảng theo thuật toán tráo bài chuẩn Fisher-Yates.
  * ============================================================================ */
-export function initBoard(cols = 6, rows = 4, difficulty = 'easy', onTilesDealtCallback = null) {
+export function initBoard(cols = 6, rows = 4, difficulty = 'easy', onTilesDealtCallback = null, resetScore = true) {
   firstSelectedTile = null;
-  currentScore = 0;
+  if (resetScore) {
+    currentScore = 0;
+  }
   remainingHints = 5;
 
   const scoreBox = document.getElementById("scoreBox");
@@ -486,21 +540,27 @@ function reshuffleRemainingTilesOnly() {
   }
 
   // ==========================================================================
-  // [TẠM THỜI - TEMPORARILY BEFORE ALTER]
-  // Chức năng: Dừng đồng hồ & khóa bàn ngay khi ăn cặp cuối -> Chờ 800ms cho
-  // hiệu ứng nổ 8 mảnh (0.75s) rơi xong hẳn rồi mới phát 'chemStageCleared'
-  // (sau này sẽ thay bằng bảng Stage Completed & Next Stage).
+  // [OFFICIAL UPDATE - LUẬT V2]
+  // Chức năng: Khi nối sạch cặp cuối (activeVals.length === 0), chốt ngay số
+  // giây còn dư (timeLeftAtClear), dừng đồng hồ và khóa bàn chơi. Chờ 780ms
+  // cho hiệu ứng nổ 8 mảnh (0.75s) rơi xong hẳn rồi phát sự kiện
+  // 'chemStageCleared' để kích hoạt Pháo hoa tại chỗ -> Bảng Trạm Dừng 2x2.
   // ==========================================================================
-  if (activeVals.length === 0) {
+if (activeVals.length === 0) {
+    const timeLeftAtClear = getRemainingSeconds();
     stopGameTimer();
     isBoardLocked = true;
 
+    // Chờ 780ms cho hiệu ứng nổ 8 mảnh (0.75s) của cặp cuối rơi xong rồi mới bắn pháo hoa
     stageEndTimerId = setTimeout(() => {
       stageEndTimerId = null;
       window.dispatchEvent(new CustomEvent('chemStageCleared', {
-        detail: { score: currentScore }
+        detail: {
+          score: currentScore,
+          timeLeft: timeLeftAtClear
+        }
       }));
-    }, 800);
+    }, 780);
     return;
   }
 

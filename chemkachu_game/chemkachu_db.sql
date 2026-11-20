@@ -1,0 +1,27 @@
+CREATE DATABASE IF NOT EXISTS `chemkachu_db` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE `chemkachu_db`;
+
+CREATE TABLE IF NOT EXISTS `game_sessions` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `player_name` VARCHAR(100) NOT NULL,
+  `difficulty` VARCHAR(20) NOT NULL DEFAULT 'easy',
+  `play_status` VARCHAR(20) NOT NULL DEFAULT 'playing',
+  `score` INT NOT NULL DEFAULT 0,
+  `current_stage` INT NOT NULL DEFAULT 1,
+  `total_stages` INT NOT NULL DEFAULT 8,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `stage_logs` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `session_id` INT NOT NULL,
+  `stage_number` INT NOT NULL,
+  `base_score` INT NOT NULL DEFAULT 0,
+  `time_left` INT NOT NULL DEFAULT 0,
+  `bonus_rate` INT NOT NULL DEFAULT 0,
+  `time_bonus` INT NOT NULL DEFAULT 0,
+  `stage_total` INT NOT NULL DEFAULT 0,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT `fk_stage_session` FOREIGN KEY (`session_id`) REFERENCES `game_sessions`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

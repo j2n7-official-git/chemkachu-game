@@ -1,14 +1,19 @@
-/* ============================================================
- * FILENAME: src/js/chem_reactions.js
- * MODULE: 310 Chemical Reactions Engine (Grade 8 - 12 VietJack Standard)
+/* ============================================================================
+ * FILENAME: js/chem_reactions.js
+ * MODULE: 380 Chemical Reactions Engine (Grade 8 - 12 VietJack / GDPT Standard)
+ * CLASSIFICATION: Đơn chất -> Vô cơ cơ bản (Oxit, Axit, Bazơ, Muối) -> Hữu cơ
  * OPTIMIZATION: O(1) Bidirectional Hash Map Lookup
  * FORMAT: Clean notation (No underscores, max 9 chars/tile)
- * ============================================================ */
+ * ============================================================================ */
 
 export const REACTION_DATABASE = [
-  // ==========================================================
-  // NHÓM 1: KIM LOẠI + PHI KIM (O2, O3, Cl2, Br2, I2, S, N2) [1 - 45]
-  // ==========================================================
+  // ==========================================================================
+  // PHẦN I: ĐƠN CHẤT (KIM LOẠI & PHI KIM) [1 - 165]
+  // ==========================================================================
+
+  // --------------------------------------------------------------------------
+  // 1A. Kim loại + Phi kim (O2, O3, Cl2, Br2, I2, S, N2) [1 - 45]
+  // --------------------------------------------------------------------------
   { a: "Li", b: "O2", eq: "4Li + O2 -> 2Li2O", desc: "Liti cháy trong oxi tạo liti oxit." },
   { a: "Na", b: "O2", eq: "4Na + O2 -> 2Na2O", desc: "Natri cháy trong oxi cho ngọn lửa màu vàng tươi." },
   { a: "K", b: "O2", eq: "K + O2 -> KO2", desc: "Kali cháy mạnh trong oxi tạo kali supeoxit." },
@@ -55,9 +60,9 @@ export const REACTION_DATABASE = [
   { a: "Li", b: "N2", eq: "6Li + N2 -> 2Li3N", desc: "Liti tác dụng được với khí nitơ ngay ở nhiệt độ thường." },
   { a: "Mg", b: "N2", eq: "3Mg + N2 -> Mg3N2", desc: "Magie cháy được trong khí nitơ ở nhiệt độ cao." },
 
-  // ==========================================================
-  // NHÓM 2: KIM LOẠI + NƯỚC & DUNG DỊCH KIỀM [46 - 60]
-  // ==========================================================
+  // --------------------------------------------------------------------------
+  // 1B. Kim loại + Nước & Dung dịch Kiềm [46 - 60]
+  // --------------------------------------------------------------------------
   { a: "Li", b: "H2O", eq: "2Li + 2H2O -> 2LiOH + H2", desc: "Liti nổi và tan dần trong nước, giải phóng khí H2." },
   { a: "Na", b: "H2O", eq: "2Na + 2H2O -> 2NaOH + H2", desc: "Natri nóng chảy chạy trên mặt nước, sủi bọt khí H2." },
   { a: "K", b: "H2O", eq: "2K + 2H2O -> 2KOH + H2", desc: "Kali phản ứng mãnh liệt với nước, cháy ngọn lửa tím." },
@@ -74,9 +79,9 @@ export const REACTION_DATABASE = [
   { a: "Zn", b: "KOH", eq: "Zn + 2KOH -> K2ZnO2 + H2", desc: "Kẽm tan trong dung dịch KOH tạo khí H2." },
   { a: "Zn", b: "Ba(OH)2", eq: "Zn + Ba(OH)2 -> BaZnO2 + H2", desc: "Kẽm tan trong dung dịch Ba(OH)2 giải phóng khí H2." },
 
-  // ==========================================================
-  // NHÓM 3: KIM LOẠI + AXIT THƯỜNG (HCl, H2SO4(l), HBr, CH3COOH) [61 - 90]
-  // ==========================================================
+  // --------------------------------------------------------------------------
+  // 1C. Kim loại + Axit thường (HCl, H2SO4(l), HBr, CH3COOH) [61 - 90]
+  // --------------------------------------------------------------------------
   { a: "Na", b: "HCl", eq: "2Na + 2HCl -> 2NaCl + H2", desc: "Natri phản ứng mãnh liệt với HCl giải phóng khí H2." },
   { a: "K", b: "HCl", eq: "2K + 2HCl -> 2KCl + H2", desc: "Kali phản ứng nổ nhẹ với dung dịch HCl." },
   { a: "Ca", b: "HCl", eq: "Ca + 2HCl -> CaCl2 + H2", desc: "Canxi tan nhanh trong HCl giải phóng khí H2." },
@@ -108,9 +113,9 @@ export const REACTION_DATABASE = [
   { a: "Fe", b: "CH3COOH", eq: "2CH3COOH + Fe -> (CH3COO)2Fe + H2", desc: "Sắt tác dụng axit axetic tạo muối sắt(II) axetat." },
   { a: "Ca", b: "CH3COOH", eq: "2CH3COOH + Ca -> (CH3COO)2Ca + H2", desc: "Canxi tan trong axit axetic giải phóng khí H2." },
 
-  // ==========================================================
-  // NHÓM 4: KIM LOẠI + AXIT OXI HÓA MẠNH & PHẢN ỨNG NHIỆT NHÔM [91 - 114]
-  // ==========================================================
+  // --------------------------------------------------------------------------
+  // 1D. Kim loại + Axit oxi hóa mạnh & Nhiệt nhôm [91 - 114]
+  // --------------------------------------------------------------------------
   { a: "Cu", b: "HNO3(đặc)", eq: "Cu + 4HNO3 -> Cu(NO3)2 + 2NO2 + 2H2O", desc: "Đồng tan, dung dịch hóa xanh, thoát khí NO2 nâu đỏ." },
   { a: "Cu", b: "HNO3(l)", eq: "3Cu + 8HNO3 -> 3Cu(NO3)2 + 2NO + 4H2O", desc: "Đồng tan, thoát khí NO không màu hóa nâu ngoài không khí." },
   { a: "Ag", b: "HNO3(đặc)", eq: "Ag + 2HNO3 -> AgNO3 + NO2 + H2O", desc: "Bạc tan trong HNO3 đặc, giải phóng khí NO2 nâu đỏ." },
@@ -136,9 +141,9 @@ export const REACTION_DATABASE = [
   { a: "Al", b: "CuO", eq: "2Al + 3CuO -> Al2O3 + 3Cu", desc: "Nhôm khử CuO ở nhiệt độ cao tạo đồng kim loại." },
   { a: "Al", b: "MnO2", eq: "4Al + 3MnO2 -> 2Al2O3 + 3Mn", desc: "Phản ứng nhiệt nhôm điều chế kim loại Mangan." },
 
-  // ==========================================================
-  // NHÓM 5: DÃY ĐIỆN HÓA KIM LOẠI + DUNG DỊCH MUỐI [115 - 154]
-  // ==========================================================
+  // --------------------------------------------------------------------------
+  // 1E. Kim loại + Dung dịch Muối (Dãy điện hóa) [115 - 154]
+  // --------------------------------------------------------------------------
   { a: "Mg", b: "ZnSO4", eq: "Mg + ZnSO4 -> MgSO4 + Zn", desc: "Magie đẩy kẽm ra khỏi dung dịch muối." },
   { a: "Mg", b: "ZnCl2", eq: "Mg + ZnCl2 -> MgCl2 + Zn", desc: "Magie đẩy kẽm ra khỏi dung dịch ZnCl2." },
   { a: "Mg", b: "FeSO4", eq: "Mg + FeSO4 -> MgSO4 + Fe", desc: "Magie đẩy sắt ra khỏi dung dịch FeSO4." },
@@ -180,30 +185,49 @@ export const REACTION_DATABASE = [
   { a: "Cu", b: "Fe(NO3)3", eq: "Cu + 2Fe(NO3)3 -> Cu(NO3)2 + 2Fe(NO3)2", desc: "Đồng tan trong dung dịch muối Sắt(III) nitrat." },
   { a: "Na", b: "CuSO4", eq: "2Na + 2H2O + CuSO4 -> Cu(OH)2 + Na2SO4 + H2", desc: "Natri tác dụng nước tạo NaOH rồi kết tủa xanh Cu(OH)2." },
 
-  // ==========================================================
-  // NHÓM 6: OXIT + NƯỚC, AXIT, KIỀM [155 - 200]
-  // ==========================================================
+  // --------------------------------------------------------------------------
+  // 1F. Đơn chất Phi kim (H2, C, S, P, Cl2, Br2) + Phi kim / Hợp chất [155 - 178]
+  // --------------------------------------------------------------------------
+  { a: "H2", b: "O2", eq: "2H2 + O2 -> 2H2O", desc: "Hỗn hợp nổ tạo hơi nước." },
+  { a: "H2", b: "Cl2", eq: "H2 + Cl2 -> 2HCl", desc: "Phản ứng dưới ánh sáng tạo khí hidro clorua." },
+  { a: "H2", b: "Br2", eq: "H2 + Br2 -> 2HBr", desc: "Hidro tác dụng hơi brom đun nóng tạo khí HBr." },
+  { a: "H2", b: "N2", eq: "N2 + 3H2 <=> 2NH3", desc: "Phản ứng tổng hợp amoniac (xúc tác Fe, t°, p)." },
+  { a: "H2", b: "S", eq: "H2 + S -> H2S", desc: "Khí hidro kết hợp lưu huỳnh nóng chảy tạo khí H2S." },
+  { a: "C", b: "O2", eq: "C + O2 -> CO2", desc: "Than cháy trong oxi tỏa nhiều nhiệt." },
+  { a: "C", b: "CO2", eq: "C + CO2 -> 2CO", desc: "Than nóng đỏ khử CO2 thành khí CO." },
+  { a: "C", b: "H2O", eq: "C + H2O -> CO + H2", desc: "Khí than ướt điều chế từ than nóng đỏ và hơi nước." },
+  { a: "S", b: "O2", eq: "S + O2 -> SO2", desc: "Lưu huỳnh cháy ngọn lửa xanh nhạt tạo khí SO2." },
+  { a: "P", b: "O2", eq: "4P + 5O2 -> 2P2O5", desc: "Photpho cháy sáng tạo khói trắng P2O5." },
+  { a: "P", b: "Cl2", eq: "2P + 5Cl2 -> 2PCl5", desc: "Photpho cháy trong khí clo dư tạo PCl5." },
+  { a: "Cl2", b: "NaOH", eq: "Cl2 + 2NaOH -> NaCl + NaClO + H2O", desc: "Điều chế nước Javen có tính tẩy màu, sát trùng." },
+  { a: "Cl2", b: "KOH", eq: "3Cl2 + 6KOH -> 5KCl + KClO3 + 3H2O", desc: "Clo tác dụng KOH đặc nóng tạo muối kali clorat." },
+  { a: "Cl2", b: "Ca(OH)2", eq: "2Cl2 + 2Ca(OH)2 -> CaCl2 + Ca(ClO)2 + 2H2O", desc: "Điều chế clorua vôi dùng để tẩy trắng, khử trùng." },
+  { a: "Cl2", b: "NaBr", eq: "Cl2 + 2NaBr -> 2NaCl + Br2", desc: "Clo mạnh hơn nên đẩy được brom ra khỏi muối NaBr." },
+  { a: "Cl2", b: "KBr", eq: "Cl2 + 2KBr -> 2KCl + Br2", desc: "Clo đẩy brom ra khỏi dung dịch KBr." },
+  { a: "Cl2", b: "FeCl2", eq: "Cl2 + 2FeCl2 -> 2FeCl3", desc: "Khí clo oxi hóa Sắt(II) lên Sắt(III)." },
+  { a: "Cl2", b: "KI", eq: "Cl2 + 2KI -> 2KCl + I2", desc: "Clo đẩy iot ra khỏi dung dịch muối iotua." },
+  { a: "Cl2", b: "H2S", eq: "4Cl2 + H2S + 4H2O -> H2SO4 + 8HCl", desc: "Nước clo oxi hóa khí H2S thành axit sunfuric." },
+  { a: "Br2", b: "NaOH", eq: "Br2 + 2NaOH -> NaBr + NaBrO + H2O", desc: "Brom tan trong dung dịch kiềm NaOH." },
+  { a: "Br2", b: "NaI", eq: "Br2 + 2NaI -> 2NaBr + I2", desc: "Brom đẩy được iot ra khỏi dung dịch muối NaI." },
+  { a: "Br2", b: "KI", eq: "Br2 + 2KI -> 2KBr + I2", desc: "Brom đẩy iot ra khỏi dung dịch KI." },
+  { a: "Br2", b: "H2S", eq: "4Br2 + H2S + 4H2O -> H2SO4 + 8HBr", desc: "Nước brom làm mất màu khi gặp khí H2S." },
+  { a: "Br2", b: "FeCl2", eq: "3Br2 + 6FeCl2 -> 4FeCl3 + 2FeBr3", desc: "Brom oxi hóa Sắt(II) lên Sắt(III)." },
+
+  // ==========================================================================
+  // PHẦN II: HỢP CHẤT VÔ CƠ CƠ BẢN (OXIT -> AXIT -> BAZƠ -> MUỐI) [179 - 332]
+  // ==========================================================================
+
+  // --------------------------------------------------------------------------
+  // 2A. Oxit (Oxit Bazơ, Oxit Axit, Oxit Lưỡng tính) + Nước, Axit, Kiềm, Chất khử [179 - 236]
+  // --------------------------------------------------------------------------
   { a: "Li2O", b: "H2O", eq: "Li2O + H2O -> 2LiOH", desc: "Liti oxit tan trong nước tạo dung dịch kiềm LiOH." },
   { a: "Na2O", b: "H2O", eq: "Na2O + H2O -> 2NaOH", desc: "Natri oxit tan trong nước tạo dung dịch kiềm NaOH." },
   { a: "K2O", b: "H2O", eq: "K2O + H2O -> 2KOH", desc: "Kali oxit tan trong nước tạo dung dịch kiềm KOH." },
   { a: "CaO", b: "H2O", eq: "CaO + H2O -> Ca(OH)2", desc: "Vôi sống tôi trong nước tỏa nhiệt mạnh tạo Ca(OH)2." },
   { a: "BaO", b: "H2O", eq: "BaO + H2O -> Ba(OH)2", desc: "Bari oxit tan trong nước tạo dung dịch Ba(OH)2." },
-  { a: "CO2", b: "H2O", eq: "CO2 + H2O <=> H2CO3", desc: "Khí CO2 tan một phần tạo axit cacbonic yếu." },
-  { a: "SO2", b: "H2O", eq: "SO2 + H2O <=> H2SO3", desc: "Khí SO2 tan trong nước tạo axit sunfurơ." },
-  { a: "SO3", b: "H2O", eq: "SO3 + H2O -> H2SO4", desc: "SO3 hấp thụ vào nước tạo axit sunfuric tỏa nhiệt mạnh." },
-  { a: "P2O5", b: "H2O", eq: "P2O5 + 3H2O -> 2H3PO4", desc: "P2O5 hút ẩm mạnh tạo axit photphoric." },
-  { a: "N2O5", b: "H2O", eq: "N2O5 + H2O -> 2HNO3", desc: "Đinitơ pentaoxit tan trong nước tạo axit nitric." },
-  { a: "CO2", b: "NaOH", eq: "CO2 + 2NaOH -> Na2CO3 + H2O", desc: "Khí CO2 bị hấp thụ bởi dung dịch kiềm NaOH." },
-  { a: "CO2", b: "KOH", eq: "CO2 + 2KOH -> K2CO3 + H2O", desc: "Khí CO2 phản ứng với dung dịch KOH." },
-  { a: "CO2", b: "Ca(OH)2", eq: "CO2 + Ca(OH)2 -> CaCO3 + H2O", desc: "Khí CO2 làm đục nước vôi trong tạo kết tủa CaCO3." },
-  { a: "CO2", b: "Ba(OH)2", eq: "CO2 + Ba(OH)2 -> BaCO3 + H2O", desc: "Tạo kết tủa trắng BaCO3." },
-  { a: "SO2", b: "NaOH", eq: "SO2 + 2NaOH -> Na2SO3 + H2O", desc: "Khí SO2 bị giữ lại bởi dung dịch NaOH." },
-  { a: "SO2", b: "KOH", eq: "SO2 + 2KOH -> K2SO3 + H2O", desc: "Khí SO2 tác dụng dung dịch KOH." },
-  { a: "SO2", b: "Ca(OH)2", eq: "SO2 + Ca(OH)2 -> CaSO3 + H2O", desc: "Khí SO2 làm đục nước vôi trong." },
-  { a: "SO2", b: "Ba(OH)2", eq: "SO2 + Ba(OH)2 -> BaSO3 + H2O", desc: "Tạo kết tủa trắng BaSO3." },
-  { a: "SO3", b: "NaOH", eq: "SO3 + 2NaOH -> Na2SO4 + H2O", desc: "SO3 tác dụng NaOH tạo muối sunfat." },
-  { a: "P2O5", b: "NaOH", eq: "P2O5 + 6NaOH -> 2Na3PO4 + 3H2O", desc: "P2O5 tác dụng với dung dịch kiềm." },
-  { a: "SiO2", b: "NaOH", eq: "SiO2 + 2NaOH -> Na2SiO3 + H2O", desc: "Cát thạch anh SiO2 tan trong NaOH đặc nóng." },
+  { a: "CaO", b: "CO2", eq: "CaO + CO2 -> CaCO3", desc: "Vôi sống hấp thụ khí CO2 tạo đá vôi." },
+  { a: "BaO", b: "CO2", eq: "BaO + CO2 -> BaCO3", desc: "Bari oxit kết hợp khí CO2 tạo BaCO3." },
+  { a: "CaO", b: "SiO2", eq: "CaO + SiO2 -> CaSiO3", desc: "Tạo xỉ canxi silicat ở nhiệt độ cao trong lò luyện gang." },
   { a: "Na2O", b: "HCl", eq: "Na2O + 2HCl -> 2NaCl + H2O", desc: "Natri oxit phản ứng axit tạo muối ăn." },
   { a: "K2O", b: "HCl", eq: "K2O + 2HCl -> 2KCl + H2O", desc: "Kali oxit tan trong dung dịch HCl." },
   { a: "CaO", b: "HCl", eq: "CaO + 2HCl -> CaCl2 + H2O", desc: "Canxi oxit tan nhanh trong HCl." },
@@ -212,146 +236,220 @@ export const REACTION_DATABASE = [
   { a: "MgO", b: "H2SO4(l)", eq: "MgO + H2SO4 -> MgSO4 + H2O", desc: "MgO tan trong H2SO4 loãng tạo MgSO4." },
   { a: "Al2O3", b: "HCl", eq: "Al2O3 + 6HCl -> 2AlCl3 + 3H2O", desc: "Nhôm oxit tan trong dung dịch HCl." },
   { a: "Al2O3", b: "H2SO4(l)", eq: "Al2O3 + 3H2SO4 -> Al2(SO4)3 + 3H2O", desc: "Al2O3 tan trong H2SO4 loãng." },
-  { a: "ZnO", b: "HCl", eq: "ZnO + 2HCl -> ZnCl2 + H2O", desc: "Kẽm oxit tan trong dung dịch HCl." },
-  { a: "ZnO", b: "H2SO4(l)", eq: "ZnO + H2SO4 -> ZnSO4 + H2O", desc: "ZnO tan trong dung dịch H2SO4 loãng." },
-  { a: "FeO", b: "HCl", eq: "FeO + 2HCl -> FeCl2 + H2O", desc: "FeO đen tan trong HCl tạo muối Sắt(II)." },
-  { a: "Fe2O3", b: "HCl", eq: "Fe2O3 + 6HCl -> 2FeCl3 + 3H2O", desc: "Bột Fe2O3 nâu đỏ tan tạo dung dịch vàng nâu FeCl3." },
-  { a: "Fe2O3", b: "H2SO4(l)", eq: "Fe2O3 + 3H2SO4 -> Fe2(SO4)3 + 3H2O", desc: "Fe2O3 tan trong H2SO4 loãng tạo muối Sắt(III)." },
-  { a: "Fe3O4", b: "HCl", eq: "Fe3O4 + 8HCl -> FeCl2 + 2FeCl3 + 4H2O", desc: "Oxit sắt từ tan trong HCl tạo hỗn hợp 2 muối sắt." },
-  { a: "CuO", b: "HCl", eq: "CuO + 2HCl -> CuCl2 + H2O", desc: "Bột CuO đen tan tạo dung dịch CuCl2 xanh lam." },
-  { a: "CuO", b: "H2SO4(l)", eq: "CuO + H2SO4 -> CuSO4 + H2O", desc: "CuO đen tan tạo dung dịch CuSO4 xanh đặc trưng." },
-  { a: "Cr2O3", b: "HCl", eq: "Cr2O3 + 6HCl -> 2CrCl3 + 3H2O", desc: "Crom(III) oxit tan trong HCl đặc tạo dung dịch xanh lục." },
   { a: "Al2O3", b: "NaOH", eq: "Al2O3 + 2NaOH -> 2NaAlO2 + H2O", desc: "Oxit nhôm lưỡng tính tan trong dung dịch NaOH." },
   { a: "Al2O3", b: "KOH", eq: "Al2O3 + 2KOH -> 2KAlO2 + H2O", desc: "Al2O3 tan trong dung dịch kiềm KOH." },
+  { a: "ZnO", b: "HCl", eq: "ZnO + 2HCl -> ZnCl2 + H2O", desc: "Kẽm oxit tan trong dung dịch HCl." },
+  { a: "ZnO", b: "H2SO4(l)", eq: "ZnO + H2SO4 -> ZnSO4 + H2O", desc: "ZnO tan trong dung dịch H2SO4 loãng." },
   { a: "ZnO", b: "NaOH", eq: "ZnO + 2NaOH -> Na2ZnO2 + H2O", desc: "Kẽm oxit lưỡng tính tan trong dung dịch NaOH." },
   { a: "ZnO", b: "KOH", eq: "ZnO + 2KOH -> K2ZnO2 + H2O", desc: "ZnO tan trong dung dịch KOH." },
-  { a: "Cr2O3", b: "NaOH", eq: "Cr2O3 + 2NaOH -> 2NaCrO2 + H2O", desc: "Cr2O3 lưỡng tính tan trong NaOH đặc." },
+  { a: "ZnO", b: "C", eq: "ZnO + C -> Zn + CO", desc: "Cacbon khử ZnO ở nhiệt độ cao điều chế kẽm." },
+  { a: "FeO", b: "HCl", eq: "FeO + 2HCl -> FeCl2 + H2O", desc: "FeO đen tan trong HCl tạo muối Sắt(II)." },
+  { a: "FeO", b: "HNO3(l)", eq: "3FeO + 10HNO3 -> 3Fe(NO3)3 + NO + 5H2O", desc: "FeO bị oxi hóa lên muối Sắt(III) và khí NO." },
+  { a: "FeO", b: "CO", eq: "FeO + CO -> Fe + CO2", desc: "CO khử sắt(II) oxit thành sắt." },
+  { a: "Fe2O3", b: "HCl", eq: "Fe2O3 + 6HCl -> 2FeCl3 + 3H2O", desc: "Bột Fe2O3 nâu đỏ tan tạo dung dịch vàng nâu FeCl3." },
+  { a: "Fe2O3", b: "H2SO4(l)", eq: "Fe2O3 + 3H2SO4 -> Fe2(SO4)3 + 3H2O", desc: "Fe2O3 tan trong H2SO4 loãng tạo muối Sắt(III)." },
+  { a: "Fe2O3", b: "CO", eq: "Fe2O3 + 3CO -> 2Fe + 3CO2", desc: "Phản ứng luyện gang khử quặng hematit bằng CO." },
+  { a: "Fe2O3", b: "H2", eq: "Fe2O3 + 3H2 -> 2Fe + 3H2O", desc: "Khí H2 khử Fe2O3 ở nhiệt độ cao tạo sắt." },
+  { a: "Fe3O4", b: "HCl", eq: "Fe3O4 + 8HCl -> FeCl2 + 2FeCl3 + 4H2O", desc: "Oxit sắt từ tan trong HCl tạo hỗn hợp 2 muối sắt." },
+  { a: "Fe3O4", b: "CO", eq: "Fe3O4 + 4CO -> 3Fe + 4CO2", desc: "Khí CO khử oxit sắt từ thành sắt." },
+  { a: "CuO", b: "HCl", eq: "CuO + 2HCl -> CuCl2 + H2O", desc: "Bột CuO đen tan tạo dung dịch CuCl2 xanh lam." },
+  { a: "CuO", b: "H2SO4(l)", eq: "CuO + H2SO4 -> CuSO4 + H2O", desc: "CuO đen tan tạo dung dịch CuSO4 xanh đặc trưng." },
   { a: "CuO", b: "H2", eq: "CuO + H2 -> Cu + H2O", desc: "Khí H2 khử CuO đen thành đồng đỏ gạch." },
   { a: "CuO", b: "CO", eq: "CuO + CO -> Cu + CO2", desc: "Khí CO khử CuO đen thành đồng kim loại." },
-  { a: "Fe2O3", b: "CO", eq: "Fe2O3 + 3CO -> 2Fe + 3CO2", desc: "Phản ứng luyện gang khử quặng hematit bằng CO." },
-
-  // ==========================================================
-  // NHÓM 7: KHỬ OXIT NÂNG CAO, AXIT + BAZƠ & BAZƠ + MUỐI [201 - 242]
-  // ==========================================================
-  { a: "Fe2O3", b: "H2", eq: "Fe2O3 + 3H2 -> 2Fe + 3H2O", desc: "Khí H2 khử Fe2O3 ở nhiệt độ cao tạo sắt." },
-  { a: "Fe3O4", b: "CO", eq: "Fe3O4 + 4CO -> 3Fe + 4CO2", desc: "Khí CO khử oxit sắt từ thành sắt." },
-  { a: "FeO", b: "CO", eq: "FeO + CO -> Fe + CO2", desc: "CO khử sắt(II) oxit thành sắt." },
-  { a: "ZnO", b: "C", eq: "ZnO + C -> Zn + CO", desc: "Cacbon khử ZnO ở nhiệt độ cao điều chế kẽm." },
+  { a: "CuO", b: "NH3", eq: "3CuO + 2NH3 -> 3Cu + N2 + 3H2O", desc: "Khí NH3 khử CuO đen nóng thành đồng đỏ." },
+  { a: "Cr2O3", b: "HCl", eq: "Cr2O3 + 6HCl -> 2CrCl3 + 3H2O", desc: "Crom(III) oxit tan trong HCl đặc tạo dung dịch xanh lục." },
+  { a: "Cr2O3", b: "NaOH", eq: "Cr2O3 + 2NaOH -> 2NaCrO2 + H2O", desc: "Cr2O3 lưỡng tính tan trong NaOH đặc." },
   { a: "PbO", b: "H2", eq: "PbO + H2 -> Pb + H2O", desc: "Khí H2 khử chì oxit tạo chì kim loại." },
-  { a: "CaO", b: "CO2", eq: "CaO + CO2 -> CaCO3", desc: "Vôi sống hấp thụ khí CO2 tạo đá vôi." },
-  { a: "BaO", b: "CO2", eq: "BaO + CO2 -> BaCO3", desc: "Bari oxit kết hợp khí CO2 tạo BaCO3." },
+  { a: "CO2", b: "H2O", eq: "CO2 + H2O <=> H2CO3", desc: "Khí CO2 tan một phần tạo axit cacbonic yếu." },
+  { a: "CO2", b: "NaOH", eq: "CO2 + 2NaOH -> Na2CO3 + H2O", desc: "Khí CO2 bị hấp thụ bởi dung dịch kiềm NaOH." },
+  { a: "CO2", b: "KOH", eq: "CO2 + 2KOH -> K2CO3 + H2O", desc: "Khí CO2 phản ứng với dung dịch KOH." },
+  { a: "CO2", b: "Ca(OH)2", eq: "CO2 + Ca(OH)2 -> CaCO3 + H2O", desc: "Khí CO2 làm đục nước vôi trong tạo kết tủa CaCO3." },
+  { a: "CO2", b: "Ba(OH)2", eq: "CO2 + Ba(OH)2 -> BaCO3 + H2O", desc: "Tạo kết tủa trắng BaCO3." },
+  { a: "SO2", b: "H2O", eq: "SO2 + H2O <=> H2SO3", desc: "Khí SO2 tan trong nước tạo axit sunfurơ." },
+  { a: "SO2", b: "NaOH", eq: "SO2 + 2NaOH -> Na2SO3 + H2O", desc: "Khí SO2 bị giữ lại bởi dung dịch NaOH." },
+  { a: "SO2", b: "KOH", eq: "SO2 + 2KOH -> K2SO3 + H2O", desc: "Khí SO2 tác dụng dung dịch KOH." },
+  { a: "SO2", b: "Ca(OH)2", eq: "SO2 + Ca(OH)2 -> CaSO3 + H2O", desc: "Khí SO2 làm đục nước vôi trong." },
+  { a: "SO2", b: "Ba(OH)2", eq: "SO2 + Ba(OH)2 -> BaSO3 + H2O", desc: "Tạo kết tủa trắng BaSO3." },
+  { a: "SO2", b: "Br2", eq: "SO2 + Br2 + 2H2O -> H2SO4 + 2HBr", desc: "Khí SO2 làm mất màu dung dịch nước brom." },
+  { a: "SO2", b: "KMnO4", eq: "5SO2 + 2KMnO4 + 2H2O -> K2SO4 + 2MnSO4 + 2H2SO4", desc: "SO2 làm mất màu dung dịch thuốc tím KMnO4." },
+  { a: "SO2", b: "H2S", eq: "SO2 + 2H2S -> 3S + 2H2O", desc: "Hai khí tác dụng nhau tạo kết tủa vàng lưu huỳnh." },
+  { a: "SO3", b: "H2O", eq: "SO3 + H2O -> H2SO4", desc: "SO3 hấp thụ vào nước tạo axit sunfuric tỏa nhiệt mạnh." },
+  { a: "SO3", b: "NaOH", eq: "SO3 + 2NaOH -> Na2SO4 + H2O", desc: "SO3 tác dụng NaOH tạo muối sunfat." },
+  { a: "P2O5", b: "H2O", eq: "P2O5 + 3H2O -> 2H3PO4", desc: "P2O5 hút ẩm mạnh tạo axit photphoric." },
+  { a: "P2O5", b: "NaOH", eq: "P2O5 + 6NaOH -> 2Na3PO4 + 3H2O", desc: "P2O5 tác dụng với dung dịch kiềm." },
+  { a: "N2O5", b: "H2O", eq: "N2O5 + H2O -> 2HNO3", desc: "Đinitơ pentaoxit tan trong nước tạo axit nitric." },
+  { a: "SiO2", b: "NaOH", eq: "SiO2 + 2NaOH -> Na2SiO3 + H2O", desc: "Cát thạch anh SiO2 tan trong NaOH đặc nóng." },
+  { a: "SiO2", b: "HF", eq: "SiO2 + 4HF -> SiF4 + 2H2O", desc: "Axit HF ăn mòn thủy tinh." },
+
+  // --------------------------------------------------------------------------
+  // 2B. Bazơ (Kiềm tan & Hiđroxit không tan / Lưỡng tính) + Axit & Muối [237 - 266]
+  // --------------------------------------------------------------------------
   { a: "NaOH", b: "HCl", eq: "NaOH + HCl -> NaCl + H2O", desc: "Phản ứng trung hòa axit mạnh và bazơ mạnh." },
   { a: "NaOH", b: "HNO3(l)", eq: "NaOH + HNO3 -> NaNO3 + H2O", desc: "Phản ứng trung hòa tạo natri nitrat." },
   { a: "NaOH", b: "H2SO4(l)", eq: "2NaOH + H2SO4 -> Na2SO4 + 2H2O", desc: "Phản ứng trung hòa tỏa nhiệt." },
+  { a: "NaOH", b: "H3PO4", eq: "3NaOH + H3PO4 -> Na3PO4 + 3H2O", desc: "NaOH trung hòa axit photphoric." },
   { a: "KOH", b: "HCl", eq: "KOH + HCl -> KCl + H2O", desc: "Phản ứng trung hòa tạo muối KCl." },
   { a: "KOH", b: "HNO3(l)", eq: "KOH + HNO3 -> KNO3 + H2O", desc: "Phản ứng trung hòa tạo kali nitrat." },
   { a: "KOH", b: "H2SO4(l)", eq: "2KOH + H2SO4 -> K2SO4 + 2H2O", desc: "Phản ứng trung hòa tạo K2SO4." },
   { a: "Ca(OH)2", b: "HCl", eq: "Ca(OH)2 + 2HCl -> CaCl2 + 2H2O", desc: "Nước vôi trung hòa axit HCl." },
   { a: "Ca(OH)2", b: "HNO3(l)", eq: "Ca(OH)2 + 2HNO3 -> Ca(NO3)2 + 2H2O", desc: "Canxi hidroxit tác dụng axit nitric." },
+  { a: "Ca(OH)2", b: "H2SO4(l)", eq: "Ca(OH)2 + H2SO4 -> CaSO4 + 2H2O", desc: "Nước vôi trung hòa axit sunfuric loãng." },
   { a: "Ba(OH)2", b: "HCl", eq: "Ba(OH)2 + 2HCl -> BaCl2 + 2H2O", desc: "Bari hidroxit phản ứng HCl tạo muối tan." },
+  { a: "Ba(OH)2", b: "HNO3(l)", eq: "Ba(OH)2 + 2HNO3 -> Ba(NO3)2 + 2H2O", desc: "Bari hidroxit trung hòa axit nitric." },
   { a: "Ba(OH)2", b: "H2SO4(l)", eq: "Ba(OH)2 + H2SO4 -> BaSO4 + 2H2O", desc: "Tạo kết tủa trắng BaSO4 đồng thời trung hòa." },
   { a: "Cu(OH)2", b: "HCl", eq: "Cu(OH)2 + 2HCl -> CuCl2 + 2H2O", desc: "Kết tủa xanh Cu(OH)2 tan tạo dung dịch xanh lam." },
+  { a: "Cu(OH)2", b: "HNO3(l)", eq: "Cu(OH)2 + 2HNO3 -> Cu(NO3)2 + 2H2O", desc: "Cu(OH)2 tan trong axit nitric tạo dung dịch xanh." },
   { a: "Cu(OH)2", b: "H2SO4(l)", eq: "Cu(OH)2 + H2SO4 -> CuSO4 + 2H2O", desc: "Cu(OH)2 tan trong H2SO4 loãng tạo dung dịch xanh." },
   { a: "Fe(OH)3", b: "HCl", eq: "Fe(OH)3 + 3HCl -> FeCl3 + 3H2O", desc: "Kết tủa nâu đỏ Fe(OH)3 tan tạo dung dịch vàng nâu." },
+  { a: "Fe(OH)3", b: "H2SO4(l)", eq: "2Fe(OH)3 + 3H2SO4 -> Fe2(SO4)3 + 6H2O", desc: "Fe(OH)3 tan trong H2SO4 loãng tạo muối Sắt(III)." },
   { a: "Fe(OH)2", b: "HCl", eq: "Fe(OH)2 + 2HCl -> FeCl2 + 2H2O", desc: "Fe(OH)2 tan trong axit HCl tạo muối Sắt(II)." },
   { a: "Mg(OH)2", b: "HCl", eq: "Mg(OH)2 + 2HCl -> MgCl2 + 2H2O", desc: "Kết tủa trắng Mg(OH)2 tan hoàn toàn trong HCl." },
+  { a: "Mg(OH)2", b: "H2SO4(l)", eq: "Mg(OH)2 + H2SO4 -> MgSO4 + 2H2O", desc: "Mg(OH)2 tan trong H2SO4 loãng." },
   { a: "Al(OH)3", b: "HCl", eq: "Al(OH)3 + 3HCl -> AlCl3 + 3H2O", desc: "Kết tủa keo trắng Al(OH)3 tan trong axit." },
-  { a: "Zn(OH)2", b: "HCl", eq: "Zn(OH)2 + 2HCl -> ZnCl2 + 2H2O", desc: "Zn(OH)2 tan trong dung dịch HCl." },
   { a: "Al(OH)3", b: "NaOH", eq: "Al(OH)3 + NaOH -> NaAlO2 + 2H2O", desc: "Hidroxit lưỡng tính Al(OH)3 tan trong NaOH dư." },
   { a: "Al(OH)3", b: "KOH", eq: "Al(OH)3 + KOH -> KAlO2 + 2H2O", desc: "Hidroxit lưỡng tính Al(OH)3 tan trong KOH dư." },
+  { a: "Zn(OH)2", b: "HCl", eq: "Zn(OH)2 + 2HCl -> ZnCl2 + 2H2O", desc: "Zn(OH)2 tan trong dung dịch HCl." },
   { a: "Zn(OH)2", b: "NaOH", eq: "Zn(OH)2 + 2NaOH -> Na2ZnO2 + 2H2O", desc: "Hidroxit lưỡng tính Zn(OH)2 tan trong NaOH." },
+
+  // --------------------------------------------------------------------------
+  // 2C. Muối + Axit, Bazơ, Muối khác & Phản ứng Oxi hóa khử vô cơ [267 - 332]
+  // --------------------------------------------------------------------------
+  { a: "CaCO3", b: "HCl", eq: "CaCO3 + 2HCl -> CaCl2 + CO2 + H2O", desc: "Đá vôi tan ra, sủi bọt khí CO2." },
+  { a: "CaCO3", b: "HNO3(l)", eq: "CaCO3 + 2HNO3 -> Ca(NO3)2 + CO2 + H2O", desc: "Đá vôi tan trong HNO3 thoát khí CO2." },
+  { a: "Na2CO3", b: "HCl", eq: "Na2CO3 + 2HCl -> 2NaCl + CO2 + H2O", desc: "Sủi bọt khí CO2 mạnh." },
+  { a: "Na2CO3", b: "H2SO4(l)", eq: "Na2CO3 + H2SO4 -> Na2SO4 + CO2 + H2O", desc: "Sủi bọt khí CO2 trong axit sunfuric loãng." },
+  { a: "Na2CO3", b: "Ca(OH)2", eq: "Na2CO3 + Ca(OH)2 -> CaCO3 + 2NaOH", desc: "Tạo kết tủa trắng CaCO3 và xút NaOH." },
+  { a: "Na2CO3", b: "Ba(OH)2", eq: "Na2CO3 + Ba(OH)2 -> BaCO3 + 2NaOH", desc: "Tạo kết tủa trắng BaCO3." },
+  { a: "NaHCO3", b: "HCl", eq: "NaHCO3 + HCl -> NaCl + CO2 + H2O", desc: "Natri hidrocacbonat sủi bọt khí CO2 ngay lập tức." },
+  { a: "NaHCO3", b: "NaOH", eq: "NaHCO3 + NaOH -> Na2CO3 + H2O", desc: "Muối axit tác dụng với kiềm tạo muối trung hòa." },
+  { a: "NaHCO3", b: "Ca(OH)2", eq: "2NaHCO3 + Ca(OH)2 -> CaCO3 + Na2CO3 + 2H2O", desc: "Xuất hiện kết tủa trắng CaCO3." },
+  { a: "K2CO3", b: "HCl", eq: "K2CO3 + 2HCl -> 2KCl + CO2 + H2O", desc: "Giải phóng khí CO2." },
+  { a: "KHCO3", b: "HCl", eq: "KHCO3 + HCl -> KCl + CO2 + H2O", desc: "Sủi bọt khí CO2." },
+  { a: "BaCO3", b: "HCl", eq: "BaCO3 + 2HCl -> BaCl2 + CO2 + H2O", desc: "Kết tủa BaCO3 tan hết trong HCl giải phóng CO2." },
+  { a: "MgCO3", b: "HCl", eq: "MgCO3 + 2HCl -> MgCl2 + CO2 + H2O", desc: "Magie cacbonat tan trong HCl thoát khí CO2." },
+  { a: "Ca(HCO3)2", b: "HCl", eq: "Ca(HCO3)2 + 2HCl -> CaCl2 + 2CO2 + 2H2O", desc: "Giải phóng khí CO2." },
+  { a: "Ca(HCO3)2", b: "Ca(OH)2", eq: "Ca(HCO3)2 + Ca(OH)2 -> 2CaCO3 + 2H2O", desc: "Làm mềm nước cứng tạm thời tạo kết tủa CaCO3." },
+  { a: "Na2SO3", b: "HCl", eq: "Na2SO3 + 2HCl -> 2NaCl + SO2 + H2O", desc: "Thoát khí SO2 mùi hắc đặc trưng." },
+  { a: "Na2SO3", b: "H2SO4(l)", eq: "Na2SO3 + H2SO4 -> Na2SO4 + SO2 + H2O", desc: "Giải phóng khí SO2." },
+  { a: "FeS", b: "HCl", eq: "FeS + 2HCl -> FeCl2 + H2S", desc: "Thoát khí H2S có mùi trứng thối đặc trưng." },
+  { a: "Na2S", b: "HCl", eq: "Na2S + 2HCl -> 2NaCl + H2S", desc: "Giải phóng khí H2S mùi trứng thối." },
+  { a: "BaCl2", b: "H2SO4(l)", eq: "BaCl2 + H2SO4 -> BaSO4 + 2HCl", desc: "Tạo kết tủa trắng BaSO4 không tan trong axit." },
+  { a: "BaCl2", b: "Na2SO4", eq: "BaCl2 + Na2SO4 -> BaSO4 + 2NaCl", desc: "Tạo kết tủa trắng BaSO4." },
+  { a: "BaCl2", b: "Na2CO3", eq: "BaCl2 + Na2CO3 -> BaCO3 + 2NaCl", desc: "Tạo kết tủa trắng BaCO3." },
+  { a: "BaCl2", b: "AgNO3", eq: "BaCl2 + 2AgNO3 -> 2AgCl + Ba(NO3)2", desc: "Xuất hiện kết tủa trắng AgCl." },
+  { a: "Ba(NO3)2", b: "H2SO4(l)", eq: "Ba(NO3)2 + H2SO4 -> BaSO4 + 2HNO3", desc: "Tạo kết tủa trắng BaSO4." },
+  { a: "Ba(NO3)2", b: "Na2SO4", eq: "Ba(NO3)2 + Na2SO4 -> BaSO4 + 2NaNO3", desc: "Tạo kết tủa trắng BaSO4." },
+  { a: "CaCl2", b: "Na2CO3", eq: "CaCl2 + Na2CO3 -> CaCO3 + 2NaCl", desc: "Tạo kết tủa trắng CaCO3." },
+  { a: "CaCl2", b: "AgNO3", eq: "CaCl2 + 2AgNO3 -> 2AgCl + Ca(NO3)2", desc: "Tạo kết tủa trắng AgCl." },
+  { a: "AgNO3", b: "HCl", eq: "AgNO3 + HCl -> AgCl + HNO3", desc: "Xuất hiện kết tủa trắng AgCl vón cục." },
+  { a: "AgNO3", b: "HBr", eq: "AgNO3 + HBr -> AgBr + HNO3", desc: "Tạo kết tủa vàng nhạt AgBr." },
+  { a: "AgNO3", b: "HI", eq: "AgNO3 + HI -> AgI + HNO3", desc: "Tạo kết tủa vàng đậm AgI." },
+  { a: "AgNO3", b: "NaCl", eq: "AgNO3 + NaCl -> AgCl + NaNO3", desc: "Tạo kết tủa trắng AgCl." },
+  { a: "AgNO3", b: "KCl", eq: "AgNO3 + KCl -> AgCl + KNO3", desc: "Tạo kết tủa trắng AgCl." },
+  { a: "AgNO3", b: "NaBr", eq: "AgNO3 + NaBr -> AgBr + NaNO3", desc: "Tạo kết tủa vàng nhạt AgBr." },
+  { a: "AgNO3", b: "NaI", eq: "AgNO3 + NaI -> AgI + NaNO3", desc: "Tạo kết tủa vàng đậm AgI." },
+  { a: "AgNO3", b: "KI", eq: "AgNO3 + KI -> AgI + KNO3", desc: "Tạo kết tủa vàng đậm AgI." },
+  { a: "AgNO3", b: "Na3PO4", eq: "3AgNO3 + Na3PO4 -> Ag3PO4 + 3NaNO3", desc: "Xuất hiện kết tủa màu vàng Ag3PO4." },
+  { a: "AgNO3", b: "FeCl2", eq: "3AgNO3 + FeCl2 -> 2AgCl + Ag + Fe(NO3)3", desc: "Tạo kết tủa trắng AgCl kèm bạc kim loại." },
+  { a: "Pb(NO3)2", b: "KI", eq: "Pb(NO3)2 + 2KI -> PbI2 + 2KNO3", desc: "Xuất hiện kết tủa vàng tươi PbI2." },
+  { a: "Pb(NO3)2", b: "Na2S", eq: "Pb(NO3)2 + Na2S -> PbS + 2NaNO3", desc: "Tạo kết tủa đen chì sunfua PbS." },
   { a: "CuSO4", b: "NaOH", eq: "CuSO4 + 2NaOH -> Cu(OH)2 + Na2SO4", desc: "Xuất hiện kết tủa màu xanh lam Cu(OH)2." },
+  { a: "CuSO4", b: "BaCl2", eq: "CuSO4 + BaCl2 -> BaSO4 + CuCl2", desc: "Tạo kết tủa trắng BaSO4." },
+  { a: "CuSO4", b: "Ba(OH)2", eq: "CuSO4 + Ba(OH)2 -> BaSO4 + Cu(OH)2", desc: "Tạo đồng thời kết tủa trắng BaSO4 và xanh Cu(OH)2." },
+  { a: "CuSO4", b: "Na2S", eq: "CuSO4 + Na2S -> CuS + Na2SO4", desc: "Tạo kết tủa đen CuS không tan trong axit loãng." },
   { a: "CuCl2", b: "KOH", eq: "CuCl2 + 2KOH -> Cu(OH)2 + 2KCl", desc: "Tạo kết tủa xanh lam Cu(OH)2." },
   { a: "FeCl3", b: "NaOH", eq: "FeCl3 + 3NaOH -> Fe(OH)3 + 3NaCl", desc: "Xuất hiện kết tủa nâu đỏ Fe(OH)3." },
+  { a: "FeCl3", b: "KI", eq: "2FeCl3 + 2KI -> 2FeCl2 + 2KCl + I2", desc: "Muối Sắt(III) oxi hóa ion iotua tạo đơn chất iot." },
+  { a: "FeCl3", b: "H2S", eq: "2FeCl3 + H2S -> 2FeCl2 + S + 2HCl", desc: "Khí H2S khử Sắt(III) về Sắt(II) và tạo kết tủa vàng S." },
   { a: "Fe2(SO4)3", b: "KOH", eq: "Fe2(SO4)3 + 6KOH -> 2Fe(OH)3 + 3K2SO4", desc: "Tạo kết tủa nâu đỏ Fe(OH)3." },
+  { a: "Fe2(SO4)3", b: "Ba(OH)2", eq: "Fe2(SO4)3 + 3Ba(OH)2 -> 3BaSO4 + 2Fe(OH)3", desc: "Tạo kết tủa trắng BaSO4 và nâu đỏ Fe(OH)3." },
   { a: "FeSO4", b: "NaOH", eq: "FeSO4 + 2NaOH -> Fe(OH)2 + Na2SO4", desc: "Tạo kết tủa trắng xanh Fe(OH)2." },
   { a: "FeCl2", b: "KOH", eq: "FeCl2 + 2KOH -> Fe(OH)2 + 2KCl", desc: "Tạo kết tủa trắng xanh Fe(OH)2 hóa nâu ngoài không khí." },
   { a: "MgCl2", b: "NaOH", eq: "MgCl2 + 2NaOH -> Mg(OH)2 + 2NaCl", desc: "Xuất hiện kết tủa trắng Mg(OH)2." },
   { a: "MgSO4", b: "Ba(OH)2", eq: "MgSO4 + Ba(OH)2 -> BaSO4 + Mg(OH)2", desc: "Tạo đồng thời 2 kết tủa trắng BaSO4 và Mg(OH)2." },
   { a: "AlCl3", b: "NaOH", eq: "AlCl3 + 3NaOH -> Al(OH)3 + 3NaCl", desc: "Xuất hiện kết tủa keo trắng Al(OH)3." },
+  { a: "AlCl3", b: "NH3", eq: "AlCl3 + 3NH3 + 3H2O -> Al(OH)3 + 3NH4Cl", desc: "Tạo kết tủa keo trắng Al(OH)3 không tan trong NH3 dư." },
   { a: "ZnCl2", b: "NaOH", eq: "ZnCl2 + 2NaOH -> Zn(OH)2 + 2NaCl", desc: "Tạo kết tủa trắng Zn(OH)2." },
-  { a: "Ca(HCO3)2", b: "Ca(OH)2", eq: "Ca(HCO3)2 + Ca(OH)2 -> 2CaCO3 + 2H2O", desc: "Làm mềm nước cứng tạm thời tạo kết tủa CaCO3." },
-  { a: "NaHCO3", b: "NaOH", eq: "NaHCO3 + NaOH -> Na2CO3 + H2O", desc: "Muối axit tác dụng với kiềm tạo muối trung hòa." },
-  { a: "NaHCO3", b: "Ca(OH)2", eq: "2NaHCO3 + Ca(OH)2 -> CaCO3 + Na2CO3 + 2H2O", desc: "Xuất hiện kết tủa trắng CaCO3." },
   { a: "NH4Cl", b: "NaOH", eq: "NH4Cl + NaOH -> NaCl + NH3 + H2O", desc: "Thoát khí NH3 mùi khai làm xanh quỳ tím ẩm." },
+  { a: "NH4Cl", b: "AgNO3", eq: "NH4Cl + AgNO3 -> AgCl + NH4NO3", desc: "Tạo kết tủa trắng AgCl." },
+  { a: "(NH4)2SO4", b: "NaOH", eq: "(NH4)2SO4 + 2NaOH -> Na2SO4 + 2NH3 + 2H2O", desc: "Giải phóng khí NH3 mùi khai." },
   { a: "(NH4)2SO4", b: "Ba(OH)2", eq: "(NH4)2SO4 + Ba(OH)2 -> BaSO4 + 2NH3 + 2H2O", desc: "Vừa có kết tủa trắng BaSO4 vừa có khí NH3 bay ra." },
-
-  // ==========================================================
-  // NHÓM 8: TRAO ĐỔI ION, OXI HÓA KHỬ & HÓA HỮU CƠ LỚP 11 - 12 [243 - 310]
-  // ==========================================================
-  { a: "CaCO3", b: "HCl", eq: "CaCO3 + 2HCl -> CaCl2 + CO2 + H2O", desc: "Đá vôi tan ra, sủi bọt khí CO2." },
-  { a: "Na2CO3", b: "HCl", eq: "Na2CO3 + 2HCl -> 2NaCl + CO2 + H2O", desc: "Sủi bọt khí CO2 mạnh." },
-  { a: "NaHCO3", b: "HCl", eq: "NaHCO3 + HCl -> NaCl + CO2 + H2O", desc: "Natri hidrocacbonat sủi bọt khí CO2 ngay lập tức." },
-  { a: "K2CO3", b: "HCl", eq: "K2CO3 + 2HCl -> 2KCl + CO2 + H2O", desc: "Giải phóng khí CO2." },
-  { a: "KHCO3", b: "HCl", eq: "KHCO3 + HCl -> KCl + CO2 + H2O", desc: "Sủi bọt khí CO2." },
-  { a: "BaCO3", b: "HCl", eq: "BaCO3 + 2HCl -> BaCl2 + CO2 + H2O", desc: "Kết tủa BaCO3 tan hết trong HCl giải phóng CO2." },
-  { a: "MgCO3", b: "HCl", eq: "MgCO3 + 2HCl -> MgCl2 + CO2 + H2O", desc: "Magie cacbonat tan trong HCl thoát khí CO2." },
-  { a: "Na2SO3", b: "HCl", eq: "Na2SO3 + 2HCl -> 2NaCl + SO2 + H2O", desc: "Thoát khí SO2 mùi hắc đặc trưng." },
-  { a: "FeS", b: "HCl", eq: "FeS + 2HCl -> FeCl2 + H2S", desc: "Thoát khí H2S có mùi trứng thối đặc trưng." },
-  { a: "Na2S", b: "HCl", eq: "Na2S + 2HCl -> 2NaCl + H2S", desc: "Giải phóng khí H2S mùi trứng thối." },
-  { a: "BaCl2", b: "H2SO4(l)", eq: "BaCl2 + H2SO4 -> BaSO4 + 2HCl", desc: "Tạo kết tủa trắng BaSO4 không tan trong axit." },
-  { a: "Ba(NO3)2", b: "H2SO4(l)", eq: "Ba(NO3)2 + H2SO4 -> BaSO4 + 2HNO3", desc: "Tạo kết tủa trắng BaSO4." },
-  { a: "AgNO3", b: "HCl", eq: "AgNO3 + HCl -> AgCl + HNO3", desc: "Xuất hiện kết tủa trắng AgCl vón cục." },
-  { a: "AgNO3", b: "HBr", eq: "AgNO3 + HBr -> AgBr + HNO3", desc: "Tạo kết tủa vàng nhạt AgBr." },
-  { a: "AgNO3", b: "HI", eq: "AgNO3 + HI -> AgI + HNO3", desc: "Tạo kết tủa vàng đậm AgI." },
-  { a: "CH3COONa", b: "HCl", eq: "CH3COONa + HCl -> CH3COOH + NaCl", desc: "Axit mạnh HCl đẩy axit yếu CH3COOH ra khỏi muối." },
-  { a: "AgNO3", b: "NaCl", eq: "AgNO3 + NaCl -> AgCl + NaNO3", desc: "Tạo kết tủa trắng AgCl." },
-  { a: "AgNO3", b: "NaBr", eq: "AgNO3 + NaBr -> AgBr + NaNO3", desc: "Tạo kết tủa vàng nhạt AgBr." },
-  { a: "AgNO3", b: "NaI", eq: "AgNO3 + NaI -> AgI + NaNO3", desc: "Tạo kết tủa vàng đậm AgI." },
-  { a: "AgNO3", b: "KI", eq: "AgNO3 + KI -> AgI + KNO3", desc: "Tạo kết tủa vàng đậm AgI." },
-  { a: "AgNO3", b: "Na3PO4", eq: "3AgNO3 + Na3PO4 -> Ag3PO4 + 3NaNO3", desc: "Xuất hiện kết tủa màu vàng Ag3PO4." },
-  { a: "BaCl2", b: "Na2SO4", eq: "BaCl2 + Na2SO4 -> BaSO4 + 2NaCl", desc: "Tạo kết tủa trắng BaSO4." },
-  { a: "BaCl2", b: "Na2CO3", eq: "BaCl2 + Na2CO3 -> BaCO3 + 2NaCl", desc: "Tạo kết tủa trắng BaCO3." },
-  { a: "Ba(NO3)2", b: "Na2SO4", eq: "Ba(NO3)2 + Na2SO4 -> BaSO4 + 2NaNO3", desc: "Tạo kết tủa trắng BaSO4." },
-  { a: "CaCl2", b: "Na2CO3", eq: "CaCl2 + Na2CO3 -> CaCO3 + 2NaCl", desc: "Tạo kết tủa trắng CaCO3." },
-  { a: "Pb(NO3)2", b: "KI", eq: "Pb(NO3)2 + 2KI -> PbI2 + 2KNO3", desc: "Xuất hiện kết tủa vàng tươi PbI2." },
-  { a: "CuSO4", b: "Na2S", eq: "CuSO4 + Na2S -> CuS + Na2SO4", desc: "Tạo kết tủa đen CuS không tan trong axit loãng." },
-  { a: "H2", b: "O2", eq: "2H2 + O2 -> 2H2O", desc: "Hỗn hợp nổ tạo hơi nước." },
-  { a: "H2", b: "Cl2", eq: "H2 + Cl2 -> 2HCl", desc: "Phản ứng dưới ánh sáng tạo khí hidro clorua." },
-  { a: "H2", b: "N2", eq: "N2 + 3H2 <=> 2NH3", desc: "Phản ứng tổng hợp amoniac (xúc tác Fe, t°, p)." },
-  { a: "C", b: "O2", eq: "C + O2 -> CO2", desc: "Than cháy trong oxi tỏa nhiều nhiệt." },
-  { a: "S", b: "O2", eq: "S + O2 -> SO2", desc: "Lưu huỳnh cháy ngọn lửa xanh nhạt tạo khí SO2." },
-  { a: "P", b: "O2", eq: "4P + 5O2 -> 2P2O5", desc: "Photpho cháy sáng tạo khói trắng P2O5." },
   { a: "NH3", b: "HCl", eq: "NH3 + HCl -> NH4Cl", desc: "Hai khí không màu gặp nhau tạo khói trắng NH4Cl." },
-  { a: "Cl2", b: "NaOH", eq: "Cl2 + 2NaOH -> NaCl + NaClO + H2O", desc: "Điều chế nước Javen có tính tẩy màu, sát trùng." },
-  { a: "Cl2", b: "Ca(OH)2", eq: "2Cl2 + 2Ca(OH)2 -> CaCl2 + Ca(ClO)2 + 2H2O", desc: "Điều chế clorua vôi dùng để tẩy trắng, khử trùng." },
-  { a: "Cl2", b: "NaBr", eq: "Cl2 + 2NaBr -> 2NaCl + Br2", desc: "Clo mạnh hơn nên đẩy được brom ra khỏi muối NaBr." },
-  { a: "Cl2", b: "KBr", eq: "Cl2 + 2KBr -> 2KCl + Br2", desc: "Clo đẩy brom ra khỏi dung dịch KBr." },
-  { a: "Cl2", b: "FeCl2", eq: "Cl2 + 2FeCl2 -> 2FeCl3", desc: "Khí clo oxi hóa Sắt(II) lên Sắt(III)." },
-  { a: "Cl2", b: "KI", eq: "Cl2 + 2KI -> 2KCl + I2", desc: "Clo đẩy iot ra khỏi dung dịch muối iotua." },
-  { a: "Cl2", b: "H2S", eq: "4Cl2 + H2S + 4H2O -> H2SO4 + 8HCl", desc: "Nước clo oxi hóa khí H2S thành axit sunfuric." },
-  { a: "Br2", b: "NaI", eq: "Br2 + 2NaI -> 2NaBr + I2", desc: "Brom đẩy được iot ra khỏi dung dịch muối NaI." },
-  { a: "Br2", b: "KI", eq: "Br2 + 2KI -> 2KBr + I2", desc: "Brom đẩy iot ra khỏi dung dịch KI." },
-  { a: "Br2", b: "H2S", eq: "4Br2 + H2S + 4H2O -> H2SO4 + 8HBr", desc: "Nước brom làm mất màu khi gặp khí H2S." },
-  { a: "Br2", b: "FeCl2", eq: "3Br2 + 6FeCl2 -> 4FeCl3 + 2FeBr3", desc: "Brom oxi hóa Sắt(II) lên Sắt(III)." },
-  { a: "SO2", b: "Br2", eq: "SO2 + Br2 + 2H2O -> H2SO4 + 2HBr", desc: "Khí SO2 làm mất màu dung dịch nước brom." },
-  { a: "SO2", b: "KMnO4", eq: "5SO2 + 2KMnO4 + 2H2O -> K2SO4 + 2MnSO4 + 2H2SO4", desc: "SO2 làm mất màu dung dịch thuốc tím KMnO4." },
+  { a: "NH3", b: "H2SO4(l)", eq: "2NH3 + H2SO4 -> (NH4)2SO4", desc: "Khí NH3 tác dụng axit sunfuric tạo phân đạm amoni." },
   { a: "KMnO4", b: "HCl", eq: "2KMnO4 + 16HCl -> 2KCl + 2MnCl2 + 5Cl2 + 8H2O", desc: "Điều chế khí clo trong phòng thí nghiệm từ KMnO4 và HCl đặc." },
   { a: "KMnO4", b: "HBr", eq: "2KMnO4 + 16HBr -> 2KBr + 2MnBr2 + 5Br2 + 8H2O", desc: "KMnO4 oxi hóa HBr giải phóng hơi brom màu nâu đỏ." },
   { a: "KMnO4", b: "KI", eq: "2KMnO4 + 10KI + 8H2SO4 -> 6K2SO4 + 2MnSO4 + 5I2 + 8H2O", desc: "Thuốc tím oxi hóa ion I- tạo kết tủa tím đen I2." },
   { a: "KMnO4", b: "FeSO4", eq: "2KMnO4 + 10FeSO4 + 8H2SO4 -> K2SO4 + 2MnSO4 + 5Fe2(SO4)3 + 8H2O", desc: "KMnO4 mất màu tím khi oxi hóa muối Sắt(II) lên Sắt(III)." },
   { a: "KMnO4", b: "H2S", eq: "2KMnO4 + 5H2S + 3H2SO4 -> K2SO4 + 2MnSO4 + 5S + 8H2O", desc: "Khí H2S làm mất màu thuốc tím và xuất hiện vẩn đục vàng lưu huỳnh." },
-  { a: "FeCl3", b: "KI", eq: "2FeCl3 + 2KI -> 2FeCl2 + 2KCl + I2", desc: "Muối Sắt(III) oxi hóa ion iotua tạo đơn chất iot." },
-  { a: "FeCl3", b: "H2S", eq: "2FeCl3 + H2S -> 2FeCl2 + S + 2HCl", desc: "Khí H2S khử Sắt(III) về Sắt(II) và tạo kết tủa vàng S." },
-  { a: "SiO2", b: "HF", eq: "SiO2 + 4HF -> SiF4 + 2H2O", desc: "Axit HF ăn mòn thủy tinh." },
+
+  // ==========================================================================
+  // PHẦN III: HỢP CHẤT HỮU CƠ (HIĐROCACBON -> DẪN XUẤT -> CACBOHIĐRAT/AMIN) [333 - 380]
+  // ==========================================================================
+
+  // --------------------------------------------------------------------------
+  // 3A. Hiđrocacbon (Ankan, Anken, Ankin, Aren) [333 - 349]
+  // --------------------------------------------------------------------------
   { a: "CH4", b: "Cl2", eq: "CH4 + Cl2 -> CH3Cl + HCl", desc: "Phản ứng thế clo vào metan khi có ánh sáng." },
+  { a: "CH4", b: "O2", eq: "CH4 + 2O2 -> CO2 + 2H2O", desc: "Khí metan cháy tỏa nhiều nhiệt." },
+  { a: "C2H6", b: "Cl2", eq: "C2H6 + Cl2 -> C2H5Cl + HCl", desc: "Etan tham gia phản ứng thế clo ngoài ánh sáng." },
+  { a: "C2H4", b: "H2", eq: "C2H4 + H2 -> C2H6", desc: "Etilen cộng hidro (xúc tác Ni, t°) tạo etan." },
   { a: "C2H4", b: "Br2", eq: "C2H4 + Br2 -> C2H4Br2", desc: "Etilen làm mất màu dung dịch nước brom." },
+  { a: "C2H4", b: "HCl", eq: "C2H4 + HCl -> C2H5Cl", desc: "Etilen cộng HCl tạo etyl clorua." },
+  { a: "C2H4", b: "H2O", eq: "C2H4 + H2O -> C2H5OH", desc: "Hiđrat hóa etilen (xúc tác H+) điều chế ancol etylic." },
   { a: "C2H4", b: "KMnO4", eq: "3C2H4 + 2KMnO4 + 4H2O -> 3C2H4(OH)2 + 2MnO2 + 2KOH", desc: "Etilen làm mất màu tím KMnO4, tạo kết tủa đen MnO2." },
+  { a: "C3H6", b: "Br2", eq: "C3H6 + Br2 -> C3H6Br2", desc: "Propilen làm mất màu dung dịch nước brom." },
+  { a: "C2H2", b: "H2", eq: "C2H2 + 2H2 -> C2H6", desc: "Axetilen cộng hidro (xúc tác Ni, t°) tạo etan." },
   { a: "C2H2", b: "Br2", eq: "C2H2 + 2Br2 -> C2H2Br4", desc: "Axetilen làm mất màu dung dịch brom." },
+  { a: "C2H2", b: "HCl", eq: "C2H2 + HCl -> CH2=CHCl", desc: "Axetilen cộng HCl (xúc tác HgCl2) tạo vinyl clorua." },
+  { a: "C2H2", b: "H2O", eq: "C2H2 + H2O -> CH3CHO", desc: "Axetilen cộng nước (xúc tác HgSO4) tạo anđehit axetic." },
   { a: "C2H2", b: "KMnO4", eq: "3C2H2 + 8KMnO4 -> 3(COOK)2 + 8MnO2 + 2KOH + 2H2O", desc: "Axetilen làm mất màu dung dịch thuốc tím KMnO4." },
   { a: "C2H2", b: "AgNO3/NH3", eq: "C2H2 + 2AgNO3 + 2NH3 -> Ag2C2 + 2NH4NO3", desc: "Axetilen tạo kết tủa vàng nhạt bạc axetilua." },
   { a: "C6H6", b: "Br2(Fe)", eq: "C6H6 + Br2 -> C6H5Br + HBr", desc: "Benzen thế brom khan khi có bột sắt xúc tác." },
+  { a: "C6H6", b: "H2", eq: "C6H6 + 3H2 -> C6H12", desc: "Benzen cộng hidro (xúc tác Ni, t°) tạo xiclohexan." },
+
+  // --------------------------------------------------------------------------
+  // 3B. Ancol, Phenol, Anđehit, Axit cacboxylic, Este [350 - 371]
+  // --------------------------------------------------------------------------
+  { a: "CH3OH", b: "Na", eq: "2CH3OH + 2Na -> 2CH3ONa + H2", desc: "Natri tác dụng ancol metylic giải phóng khí H2." },
+  { a: "CH3OH", b: "CuO", eq: "CH3OH + CuO -> HCHO + Cu + H2O", desc: "Oxi hóa ancol metylic bằng CuO tạo anđehit fomic." },
   { a: "C2H5OH", b: "Na", eq: "2C2H5OH + 2Na -> 2C2H5ONa + H2", desc: "Natri tan trong ancol etylic giải phóng khí H2." },
+  { a: "C2H5OH", b: "K", eq: "2C2H5OH + 2K -> 2C2H5OK + H2", desc: "Kali phản ứng với ancol etylic thoát khí H2." },
   { a: "C2H5OH", b: "CuO", eq: "C2H5OH + CuO -> CH3CHO + Cu + H2O", desc: "Oxi hóa ancol bậc 1 bằng CuO đen tạo đồng đỏ." },
+  { a: "C2H5OH", b: "HBr", eq: "C2H5OH + HBr -> C2H5Br + H2O", desc: "Phản ứng thế nhóm -OH của ancol bằng gốc brom." },
+  { a: "C3H5(OH)3", b: "Cu(OH)2", eq: "2C3H5(OH)3 + Cu(OH)2 -> [C3H5(OH)2O]2Cu + 2H2O", desc: "Glixerol hòa tan Cu(OH)2 tạo dung dịch xanh lam thẫm." },
+  { a: "C6H5OH", b: "Na", eq: "2C6H5OH + 2Na -> 2C6H5ONa + H2", desc: "Phenol tác dụng kim loại kiềm giải phóng khí H2." },
   { a: "C6H5OH", b: "NaOH", eq: "C6H5OH + NaOH -> C6H5ONa + H2O", desc: "Phenol có tính axit yếu nên tan được trong NaOH." },
+  { a: "C6H5OH", b: "Br2", eq: "C6H5OH + 3Br2 -> C6H2Br3OH + 3HBr", desc: "Phenol làm mất màu nước brom, tạo kết tủa trắng." },
+  { a: "HCHO", b: "AgNO3/NH3", eq: "HCHO + 4AgNO3 + 6NH3 + 2H2O -> (NH4)2CO3 + 4Ag + 4NH4NO3", desc: "Anđehit fomic tráng gương tạo 4 mol bạc." },
+  { a: "HCHO", b: "H2", eq: "HCHO + H2 -> CH3OH", desc: "Khử anđehit fomic bằng hidro tạo ancol metylic." },
   { a: "CH3CHO", b: "AgNO3/NH3", eq: "CH3CHO + 2AgNO3 + 3NH3 + H2O -> CH3COONH4 + 2Ag + 2NH4NO3", desc: "Phản ứng tráng bạc tạo lớp Ag sáng bóng." },
+  { a: "CH3CHO", b: "H2", eq: "CH3CHO + H2 -> C2H5OH", desc: "Khử anđehit axetic bằng H2 (Ni, t°) tạo ancol etylic." },
+  { a: "CH3CHO", b: "Br2", eq: "CH3CHO + Br2 + H2O -> CH3COOH + 2HBr", desc: "Anđehit làm mất màu dung dịch nước brom." },
+  { a: "HCOOH", b: "NaOH", eq: "HCOOH + NaOH -> HCOONa + H2O", desc: "Axit fomic trung hòa dung dịch kiềm NaOH." },
+  { a: "HCOOH", b: "AgNO3/NH3", eq: "HCOOH + 2AgNO3 + 4NH3 + H2O -> (NH4)2CO3 + 2Ag + 2NH4NO3", desc: "Axit fomic có nhóm -CHO nên tham gia phản ứng tráng bạc." },
+  { a: "CH3COOH", b: "NaOH", eq: "CH3COOH + NaOH -> CH3COONa + H2O", desc: "Axit axetic trung hòa dung dịch kiềm NaOH." },
+  { a: "CH3COOH", b: "CaCO3", eq: "2CH3COOH + CaCO3 -> (CH3COO)2Ca + CO2 + H2O", desc: "Giấm ăn hòa tan đá vôi giải phóng khí CO2." },
   { a: "CH3COOH", b: "C2H5OH", eq: "CH3COOH + C2H5OH <=> CH3COOC2H5 + H2O", desc: "Phản ứng este hóa tạo etyl axetat mùi thơm." },
-  { a: "C6H12O6", b: "Cu(OH)2", eq: "2C6H12O6 + Cu(OH)2 -> (C6H11O6)2Cu + 2H2O", desc: "Glucozơ hòa tan Cu(OH)2 tạo phức đồng xanh lam." }
+  { a: "CH3COONa", b: "HCl", eq: "CH3COONa + HCl -> CH3COOH + NaCl", desc: "Axit mạnh HCl đẩy axit yếu CH3COOH ra khỏi muối." },
+  { a: "CH3COOC2H5", b: "NaOH", eq: "CH3COOC2H5 + NaOH -> CH3COONa + C2H5OH", desc: "Phản ứng xà phòng hóa thủy phân este trong môi trường kiềm." },
+
+  // --------------------------------------------------------------------------
+  // 3C. Cacbohiđrat & Amin [372 - 380]
+  // --------------------------------------------------------------------------
+  { a: "C6H12O6", b: "Cu(OH)2", eq: "2C6H12O6 + Cu(OH)2 -> (C6H11O6)2Cu + 2H2O", desc: "Glucozơ hòa tan Cu(OH)2 tạo phức đồng xanh lam." },
+  { a: "C6H12O6", b: "AgNO3/NH3", eq: "C6H12O6 + 2AgNO3 + 3NH3 + H2O -> C6H11O7NH4 + 2Ag + 2NH4NO3", desc: "Glucozơ tráng bạc phủ lớp Ag sáng bóng." },
+  { a: "C6H12O6", b: "H2", eq: "C6H12O6 + H2 -> C6H14O6", desc: "Khử glucozơ bằng H2 (Ni, t°) tạo sobitol." },
+  { a: "C6H12O6", b: "Br2", eq: "C6H12O6 + Br2 + H2O -> C6H12O7 + 2HBr", desc: "Glucozơ làm mất màu nước brom tạo axit gluconic." },
+  { a: "C12H22O11", b: "Cu(OH)2", eq: "2C12H22O11 + Cu(OH)2 -> (C12H21O11)2Cu + 2H2O", desc: "Saccarozơ hòa tan Cu(OH)2 tạo dung dịch xanh lam." },
+  { a: "CH3NH2", b: "HCl", eq: "CH3NH2 + HCl -> CH3NH3Cl", desc: "Metylamin tác dụng với axit HCl tạo muối tan." },
+  { a: "C2H5NH2", b: "HCl", eq: "C2H5NH2 + HCl -> C2H5NH3Cl", desc: "Etylamin tác dụng axit HCl tạo etylamoni clorua." },
+  { a: "C6H5NH2", b: "HCl", eq: "C6H5NH2 + HCl -> C6H5NH3Cl", desc: "Anilin tan trong dung dịch HCl tạo phenylamoni clorua." },
+  { a: "C6H5NH2", b: "Br2", eq: "C6H5NH2 + 3Br2 -> C6H2Br3NH2 + 3HBr", desc: "Anilin làm mất màu nước brom tạo kết tủa trắng." }
 ];
 
-// ============================================================
+// ============================================================================
 // BẢNG BĂM TRA CỨU HAI CHIỀU O(1) - TỐI ƯU HIỆU NĂNG TÌM KIẾM
-// ============================================================
+// ============================================================================
 const REACTION_MAP = new Map();
 
 for (const rx of REACTION_DATABASE) {
